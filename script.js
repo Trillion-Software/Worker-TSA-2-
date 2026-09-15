@@ -69,10 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
+  function translateFirebaseError(err) {
+    const code = err && err.code;
+    switch (code) {
+      case 'auth/email-already-in-use': return 'Cette adresse e-mail est déjà utilisée.';
+      case 'auth/invalid-email': return 'Adresse e-mail invalide.';
+      case 'auth/weak-password': return 'Mot de passe trop faible (6 caractères minimum).';
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+      case 'auth/invalid-credential': return 'E-mail ou mot de passe incorrect.';
+      case 'auth/too-many-requests': return 'Trop de tentatives. Réessayez dans quelques minutes.';
+      default: return 'Une erreur est survenue. Réessayez.';
+    }
+  }
+
   // --- Formulaire de connexion ---
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
-    loginForm.addEventListener('submit', (event) => {
+    loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       let valid = true;
 
@@ -92,9 +106,30 @@ document.addEventListener('DOMContentLoaded', () => {
         valid = false;
       }
 
-      if (valid) {
-        // À connecter à Firebase Authentication.
-        console.log('Connexion prête à être envoyée :', { email: emailInput.value.trim() });
+      if (!valid) return;
+
+      if (!window.wtsaFirebase) {
+        showError(passwordField, 'Service momentanément indisponible. Réessayez.');
+        return;
+      }
+
+      const submitBtn = loginForm.querySelector('.btn-pill-primary');
+      if (submitBtn) submitBtn.disabled = true;
+
+      const { auth, signInWithEmailAndPassword, db, doc, getDoc } = window.wtsaFirebase;
+
+      try {
+        const credential = await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+        const userSnap = await getDoc(doc(db, 'users', credential.user.uid));
+        if (userSnap.exists() && userSnap.data().role) {
+          window.location.href = 'services.html';
+        } else {
+          window.location.href = 'choix-profil.html';
+        }
+      } catch (err) {
+        showError(passwordField, translateFirebaseError(err));
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
@@ -102,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Formulaire de création de compte ---
   const signupForm = document.getElementById('signupForm');
   if (signupForm) {
-    signupForm.addEventListener('submit', (event) => {
+    signupForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       let valid = true;
 
@@ -144,12 +179,31 @@ document.addEventListener('DOMContentLoaded', () => {
         termsInput.focus();
       }
 
-      if (valid) {
-        // À connecter à Firebase Authentication + Firestore (création du profil).
-        console.log('Compte prêt à être créé :', {
+      if (!valid) return;
+
+      if (!window.wtsaFirebase) {
+        showError(emailField, 'Service momentanément indisponible. Réessayez.');
+        return;
+      }
+
+      const submitBtn = signupForm.querySelector('.btn-pill-primary');
+      if (submitBtn) submitBtn.disabled = true;
+
+      const { auth, createUserWithEmailAndPassword, updateProfile, db, doc, setDoc } = window.wtsaFirebase;
+
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+        await updateProfile(credential.user, { displayName: nameInput.value.trim() });
+        await setDoc(doc(db, 'users', credential.user.uid), {
           name: nameInput.value.trim(),
-          email: emailInput.value.trim()
+          email: emailInput.value.trim(),
+          createdAt: new Date().toISOString()
         });
+        window.location.href = 'choix-profil.html';
+      } catch (err) {
+        showError(emailField, translateFirebaseError(err));
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
@@ -170,12 +224,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    roleContinue.addEventListener('click', () => {
+    roleContinue.addEventListener('click', async () => {
       if (!selectedRole) return;
-      // À connecter : enregistrer le rôle choisi dans Firestore (profil utilisateur).
-      console.log('Profil choisi :', selectedRole);
+
+      if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        try {
+          await setDoc(doc(db, 'users', auth.currentUser.uid), { role: selectedRole }, { merge: true });
+        } catch (err) {
+          console.error('Erreur lors de l\'enregistrement du rôle :', err);
+        }
+      }
+
       if (selectedRole === 'client') {
         window.location.href = 'profil-client.html';
+      } else {
+        // Le parcours prestataire n'est pas encore construit.
+        window.location.href = 'services.html';
       }
     });
   }
@@ -213,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (clientProfileForm) {
-    clientProfileForm.addEventListener('submit', (event) => {
+    clientProfileForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       let valid = true;
 
@@ -241,17 +306,25 @@ document.addEventListener('DOMContentLoaded', () => {
         valid = false;
       }
 
-      if (valid) {
-        // À connecter à Firestore : enregistrer le profil (nom, prénom, téléphone, photo)
-        // et l'associer au compte créé sur la page précédente.
-        console.log('Profil client prêt à être enregistré :', {
-          firstName: firstNameInput.value.trim(),
-          lastName: lastNameInput.value.trim(),
-          phone: phoneInput.value.trim(),
-          hasPhoto: !!avatarInput.files[0]
-        });
-        window.location.href = 'services.html';
+      if (!valid) return;
+
+      if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        try {
+          await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            firstName: firstNameInput.value.trim(),
+            lastName: lastNameInput.value.trim(),
+            phone: phoneInput.value.trim()
+            // La photo de profil n'est pas encore envoyée : Firebase Storage
+            // n'est pas configuré. Pour l'instant, seul l'aperçu local fonctionne.
+          }, { merge: true });
+        } catch (err) {
+          showError(phoneField, 'Une erreur est survenue lors de l\'enregistrement. Réessayez.');
+          return;
+        }
       }
+
+      window.location.href = 'services.html';
     });
   }
 });
