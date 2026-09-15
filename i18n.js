@@ -1,0 +1,136 @@
+/* ==========================================================================
+   Worker TSA — Système de traduction FR / EN
+   Partagé sur toutes les pages. La langue choisie est mémorisée
+   (localStorage) et réappliquée automatiquement sur chaque page suivante.
+   ========================================================================== */
+
+const WTSA_LANG_KEY = 'workerTsaLang';
+
+const translations = {
+  // --- Marque / panneau gauche (page connexion) ---
+  brandHeadline: { fr: 'Trouvez le bon prestataire, en toute confiance', en: 'Find the right provider, with confidence' },
+  brandText: { fr: "Worker TSA met en relation clients et prestataires de services pour des missions simples comme pour les projets plus complexes.", en: 'Worker TSA connects clients and service providers, for simple tasks and bigger projects alike.' },
+  point1: { fr: 'Profils de prestataires vérifiés', en: 'Verified provider profiles' },
+  point2: { fr: 'Mise en contact directe, sans intermédiaire caché', en: 'Direct contact, no hidden middleman' },
+  point3: { fr: 'Avis authentiques laissés par les clients', en: 'Genuine reviews from real clients' },
+  brandFooter: { fr: '© 2026 Worker TSA. Tous droits réservés.', en: '© 2026 Worker TSA. All rights reserved.' },
+
+  // --- Onglets connexion / création de compte ---
+  tabLogin: { fr: 'Connexion', en: 'Log in' },
+  tabSignup: { fr: 'Créer un compte', en: 'Sign up' },
+
+  authLoginHeading: { fr: 'Content de vous revoir', en: 'Welcome back' },
+  authLoginSubheading: { fr: 'Connectez-vous pour retrouver vos prestataires et vos réservations.', en: 'Log in to find your providers and bookings again.' },
+  authSignupHeading: { fr: 'Créer votre compte', en: 'Create your account' },
+  authSignupSubheading: { fr: 'Rejoignez Worker TSA pour trouver un prestataire ou proposer vos services.', en: 'Join Worker TSA to find a provider or offer your services.' },
+
+  switchTextLogin: { fr: 'Pas encore de compte ?', en: "Don't have an account yet?" },
+  switchBtnLogin: { fr: 'Créer un compte', en: 'Sign up' },
+  switchTextSignup: { fr: 'Déjà un compte ?', en: 'Already have an account?' },
+  switchBtnSignup: { fr: 'Se connecter', en: 'Log in' },
+
+  labelEmail: { fr: 'Adresse e-mail', en: 'Email address' },
+  labelPassword: { fr: 'Mot de passe', en: 'Password' },
+  labelConfirm: { fr: 'Confirmer le mot de passe', en: 'Confirm password' },
+  labelName: { fr: 'Nom complet', en: 'Full name' },
+  forgotPassword: { fr: 'Mot de passe oublié ?', en: 'Forgot password?' },
+  termsText: { fr: "J'accepte les conditions d'utilisation et la politique de confidentialité de Worker TSA.", en: "I agree to Worker TSA's terms of use and privacy policy." },
+  btnLogin: { fr: 'Se connecter', en: 'Log in' },
+  btnSignup: { fr: 'Créer mon compte', en: 'Create my account' },
+
+  placeholderEmail: { fr: 'vous@exemple.com', en: 'you@example.com' },
+  placeholderName: { fr: 'Prénom et nom', en: 'First and last name' },
+  placeholderPasswordMin: { fr: '6 caractères minimum', en: 'Minimum 6 characters' },
+
+  // --- Page choix de profil ---
+  roleHeadline: { fr: 'Que voulez-vous faire sur Worker TSA ?', en: 'What would you like to do on Worker TSA?' },
+  roleSubtext: { fr: 'Vous pourrez changer de profil plus tard dans les paramètres de votre compte.', en: 'You can change your profile later in your account settings.' },
+  roleClientTitle: { fr: 'Je suis client', en: "I'm a client" },
+  roleClientDesc: { fr: 'Je recherche un prestataire de confiance pour un service.', en: "I'm looking for a trusted provider for a service." },
+  roleProviderTitle: { fr: 'Je suis prestataire', en: "I'm a service provider" },
+  roleProviderDesc: { fr: 'Je propose mes services et je trouve de nouveaux clients.', en: 'I offer my services and find new clients.' },
+  btnContinue: { fr: 'Continuer', en: 'Continue' },
+
+  // --- Page profil client ---
+  profileHeadline: { fr: 'Complétez votre profil', en: 'Complete your profile' },
+  profileSubtext: { fr: 'Ces informations sont utilisées par les prestataires pour vous identifier et vous contacter.', en: 'Providers use this information to identify and contact you.' },
+  profilePhotoHint: { fr: 'Ajouter une photo de profil', en: 'Add a profile photo' },
+  labelFirstName: { fr: 'Prénom', en: 'First name' },
+  labelLastName: { fr: 'Nom', en: 'Last name' },
+  labelPhone: { fr: 'Numéro de téléphone', en: 'Phone number' },
+  placeholderFirstName: { fr: 'Votre prénom', en: 'Your first name' },
+  placeholderLastName: { fr: 'Votre nom', en: 'Your last name' },
+  placeholderPhone: { fr: '+225 07 00 00 00 00', en: '+225 07 00 00 00 00' },
+  btnValidateProfile: { fr: 'Valider mon profil', en: 'Save my profile' },
+
+  // --- Page liste des services ---
+  servicesHeadline: { fr: 'Quel service recherchez-vous ?', en: 'Which service are you looking for?' },
+  servicesSubtext: { fr: 'Choisissez une catégorie pour voir les prestataires disponibles près de vous.', en: 'Choose a category to see available providers near you.' },
+  servicesSearchPlaceholder: { fr: 'Rechercher un service...', en: 'Search for a service...' },
+
+  // --- Catégories de services (23 domaines) ---
+  svcEngineering: { fr: 'Ingénierie & Architecture', en: 'Engineering & Architecture' },
+  svcMechanics: { fr: 'Mécanique & Électricité', en: 'Mechanics & Electricity' },
+  svcMasonry: { fr: 'Maçonnerie & Menuiserie', en: 'Masonry & Carpentry' },
+  svcMedicine: { fr: 'Médecine & Infirmerie', en: 'Medicine & Nursing' },
+  svcHair: { fr: 'Coiffure & Couture', en: 'Hairdressing & Sewing' },
+  svcDomestic: { fr: 'Travaux domestiques & Jardinerie', en: 'Domestic Work & Gardening' },
+  svcCleaning: { fr: 'Lavage & Entretien', en: 'Washing & Cleaning' },
+  svcAccounting: { fr: 'Comptabilité & Secrétariat', en: 'Accounting & Secretarial Services' },
+  svcCatering: { fr: 'Restauration & Hôtellerie', en: 'Catering & Hospitality' },
+  svcTransport: { fr: 'Transport & Logistique', en: 'Transport & Logistics' },
+  svcPhoto: { fr: 'Photographie & Organisation', en: 'Photography & Event Planning' },
+  svcAdmin: { fr: 'Administration publique & Juridique', en: 'Public Administration & Legal' },
+  svcFitness: { fr: 'Fitness & Gymnastique', en: 'Fitness & Gymnastics' },
+  svcAgriculture: { fr: 'Agriculture & Agro-industrie', en: 'Agriculture & Agribusiness' },
+  svcPharmacy: { fr: 'Pharmacie & Biologie médicale', en: 'Pharmacy & Medical Biology' },
+  svcTraining: { fr: 'Formation & Enseignement', en: 'Training & Education' },
+  svcBanking: { fr: 'Banque & Établissement financier', en: 'Banking & Financial Institutions' },
+  svcTelecom: { fr: 'Télécommunication & Informatique', en: 'Telecommunications & IT' },
+  svcRealEstate: { fr: 'Génie civil & Agent immobilier', en: 'Civil Engineering & Real Estate' },
+  svcSocial: { fr: 'Action sociale & Humanitaire (ONG)', en: 'Social Work & Humanitarian (NGO)' },
+  svcCoaching: { fr: 'Coaching & Assistant personnel', en: 'Coaching & Personal Assistant' },
+  svcImportExport: { fr: 'Importation-exportation & Transit', en: 'Import-Export & Transit' },
+  svcSecurity: { fr: 'Sécurité privée & Gardiennage', en: 'Private Security & Guarding' }
+};
+
+function wtsaGetLang() {
+  return localStorage.getItem(WTSA_LANG_KEY) || 'fr';
+}
+
+function wtsaSetLang(lang) {
+  localStorage.setItem(WTSA_LANG_KEY, lang);
+  wtsaApplyLang(lang);
+}
+
+function wtsaApplyLang(lang) {
+  document.documentElement.setAttribute('lang', lang);
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[key]) el.textContent = translations[key][lang];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (translations[key]) el.placeholder = translations[key][lang];
+  });
+
+  document.querySelectorAll('.lang-option').forEach(btn => {
+    btn.classList.toggle('is-active', btn.dataset.lang === lang);
+  });
+
+  // Redéclenche l'affichage dynamique connexion/création de compte, s'il existe sur la page.
+  if (typeof wtsaRefreshAuthCopy === 'function') {
+    wtsaRefreshAuthCopy(lang);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const currentLang = wtsaGetLang();
+  wtsaApplyLang(currentLang);
+
+  document.querySelectorAll('.lang-option').forEach(btn => {
+    btn.addEventListener('click', () => wtsaSetLang(btn.dataset.lang));
+  });
+});

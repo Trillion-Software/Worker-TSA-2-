@@ -1,0 +1,864 @@
+/* ==========================================================================
+   Worker TSA — Feuille de style partagée
+   ========================================================================== */
+
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
+
+:root {
+  /* Couleurs de marque */
+  --bordeaux: #7A1027;
+  --bordeaux-dark: #52091A;
+  --bordeaux-soft: #FBEEF1;
+  --white: #FFFFFF;
+  --ink: #221B1D;
+  --ink-muted: #6F6468;
+  --border: #EDE1E4;
+  --input-bg: #FBF7F8;
+  --error: #C1272D;
+
+  /* Typographie */
+  --font-main: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Rayon et ombre */
+  --radius-s: 10px;
+  --radius-m: 16px;
+  --shadow-panel: 0 20px 60px rgba(82, 9, 26, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--ink);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ==========================================================================
+   Sélecteur de langue FR / EN
+   ========================================================================== */
+
+.lang-switch {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  display: flex;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  padding: 3px;
+  backdrop-filter: blur(6px);
+}
+
+.lang-option {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lang-option.is-active {
+  background: var(--white);
+  color: var(--bordeaux);
+}
+
+@media (max-width: 860px) {
+  .lang-switch {
+    background: rgba(122, 16, 39, 0.08);
+    border-color: rgba(122, 16, 39, 0.18);
+  }
+
+  .lang-option {
+    color: var(--ink-muted);
+  }
+
+  .lang-option.is-active {
+    background: var(--bordeaux);
+    color: var(--white);
+  }
+}
+
+/* ==========================================================================
+   Page connexion / création de compte
+   ========================================================================== */
+
+.auth-shell {
+  display: grid;
+  grid-template-columns: 0.86fr 1fr;
+  min-height: 100vh;
+}
+
+/* --- Panneau de marque (gauche) --- */
+.auth-brand {
+  position: relative;
+  background: linear-gradient(165deg, var(--bordeaux) 0%, var(--bordeaux-dark) 100%);
+  color: var(--white);
+  padding: 56px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.auth-brand::before {
+  content: '';
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  right: -140px;
+  bottom: -160px;
+}
+
+.auth-brand::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  right: -60px;
+  bottom: -80px;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-mark-icon {
+  width: 40px;
+  height: auto;
+  flex-shrink: 0;
+  display: block;
+}
+
+.brand-mark-text {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.brand-mark-text span {
+  color: #F2C6CE;
+}
+
+.auth-brand-body {
+  position: relative;
+  z-index: 1;
+  max-width: 380px;
+}
+
+.auth-brand-body h1 {
+  font-size: 32px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+}
+
+.auth-brand-body p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+}
+
+.auth-brand-points {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 40px;
+}
+
+.auth-brand-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-brand-point svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.auth-brand-footer {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* --- Panneau formulaire (droite) --- */
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 4px;
+  margin-bottom: 32px;
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.auth-tab.is-active {
+  background: var(--white);
+  color: var(--bordeaux);
+  box-shadow: 0 1px 4px rgba(82, 9, 26, 0.12);
+}
+
+.auth-heading {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.auth-subheading {
+  margin: 0 0 28px;
+  font-size: 16px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-form.is-active {
+  display: flex;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.field input {
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--input-bg);
+  font-family: inherit;
+  font-size: 16.5px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field input::placeholder {
+  color: #B8ABAF;
+}
+
+.field input:focus {
+  border-color: var(--bordeaux);
+  box-shadow: 0 0 0 3px var(--bordeaux-soft);
+  background: var(--white);
+}
+
+.field-error {
+  font-size: 12.5px;
+  color: var(--error);
+  min-height: 1px;
+  display: none;
+}
+
+.field.has-error input {
+  border-color: var(--error);
+}
+
+.field.has-error .field-error {
+  display: block;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.link-inline {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bordeaux);
+}
+
+.link-inline:hover {
+  text-decoration: underline;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.checkbox-row input {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--bordeaux);
+  flex-shrink: 0;
+}
+
+.btn-primary {
+  height: 50px;
+  border: none;
+  border-radius: var(--radius-s);
+  background: var(--bordeaux);
+  color: var(--white);
+  font-size: 16.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.05s ease;
+}
+
+.btn-primary:hover {
+  background: var(--bordeaux-dark);
+}
+
+.btn-primary:active {
+  transform: scale(0.99);
+}
+
+.auth-switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 15.5px;
+  color: var(--ink-muted);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-brand {
+    padding: 36px 28px;
+    min-height: 260px;
+  }
+
+  .auth-brand-body h1 {
+    font-size: 24px;
+  }
+
+  .auth-brand-points {
+    display: none;
+  }
+
+  .auth-brand::before,
+  .auth-brand::after {
+    display: none;
+  }
+
+  .auth-form-panel {
+    padding: 32px 20px 56px;
+  }
+}
+
+/* ==========================================================================
+   Page choix de profil (client / prestataire)
+   ========================================================================== */
+
+.role-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--white);
+}
+
+.role-wrap {
+  width: 100%;
+  max-width: 640px;
+}
+
+.role-intro {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.role-intro h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+}
+
+.role-intro p {
+  font-size: 16.5px;
+  color: var(--ink-muted);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.role-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.role-card {
+  position: relative;
+  text-align: left;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 28px 22px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.08s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role-card:hover {
+  border-color: #E3B9C1;
+}
+
+.role-card:active {
+  transform: scale(0.99);
+}
+
+.role-card.is-selected {
+  background: var(--bordeaux-soft);
+  border-color: var(--bordeaux);
+}
+
+.role-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--bordeaux);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+}
+
+.role-card-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.role-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.role-card-desc {
+  font-size: 15px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.role-card-check {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bordeaux);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.role-card-check svg {
+  width: 13px;
+  height: 13px;
+}
+
+.role-card.is-selected .role-card-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.role-continue {
+  width: 100%;
+}
+
+.role-continue:disabled {
+  background: #E7DADD;
+  color: #B39BA1;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .role-options {
+    grid-template-columns: 1fr;
+  }
+
+  .role-intro h1 {
+    font-size: 22px;
+  }
+}
+
+/* ==========================================================================
+   Page profil client (photo, prénom, nom, téléphone)
+   ========================================================================== */
+
+.profile-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background: var(--white);
+}
+
+.profile-wrap {
+  width: 100%;
+  max-width: 420px;
+}
+
+.profile-wrap form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.avatar-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.avatar-circle {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--input-bg);
+  border: 1.5px dashed var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C9A2AA;
+  overflow: hidden;
+  padding: 0;
+}
+
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 34px;
+  height: 34px;
+}
+
+.avatar-camera {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--bordeaux);
+  border: 2px solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-camera svg {
+  width: 15px;
+  height: 15px;
+}
+
+.avatar-hint {
+  font-size: 14.5px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* ==========================================================================
+   Page liste des services
+   ========================================================================== */
+
+.services-shell {
+  min-height: 100vh;
+  padding: 48px 24px 64px;
+  background: var(--white);
+  display: flex;
+  justify-content: center;
+}
+
+.services-wrap {
+  width: 100%;
+  max-width: 760px;
+}
+
+.services-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  margin-bottom: 32px;
+  color: var(--ink-muted);
+}
+
+.services-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.services-search svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: 26px 12px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.08s ease;
+}
+
+.service-card:hover {
+  border-color: var(--bordeaux);
+  background: var(--bordeaux-soft);
+}
+
+.service-card:active {
+  transform: scale(0.98);
+}
+
+.service-icon {
+  font-size: 26px;
+}
+
+.service-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+@media (max-width: 620px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Page 1 — Écran de démarrage (splash)
+   ========================================================================== */
+
+.splash-shell {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a1a1a 0%, #060606 55%), #030303;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}
+
+.splash-shell.is-fading {
+  opacity: 0;
+}
+
+.splash-rays {
+  position: absolute;
+  top: -20%;
+  left: -30%;
+  width: 90%;
+  height: 140%;
+  background: linear-gradient(115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.05) 42%,
+    rgba(255, 255, 255, 0.09) 46%,
+    transparent 58%
+  );
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.splash-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.92);
+  animation: splashIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+
+.splash-logo {
+  width: 260px;
+  max-width: 62vw;
+  height: auto;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+}
+
+@keyframes splashIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.splash-pedestal {
+  position: relative;
+  z-index: 1;
+  margin-top: 64px;
+  width: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: splashFadeUp 0.9s ease 0.5s forwards;
+}
+
+@keyframes splashFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.splash-disc {
+  width: 220px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 30%, #4a4a4a 0%, #262626 55%, #101010 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.08);
+}
+
+.splash-moss {
+  position: absolute;
+  bottom: 6px;
+  width: 34px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #5a8a3c 0%, rgba(90, 138, 60, 0) 75%);
+  filter: blur(1px);
+}
+
+.splash-moss-1 { left: 4px; }
+.splash-moss-2 { left: 92px; bottom: 12px; width: 24px; }
+.splash-moss-3 { right: 8px; }
+
+.splash-glow {
+  position: absolute;
+  bottom: -70px;
+  width: 180px;
+  height: 90px;
+  background: radial-gradient(ellipse, rgba(122, 16, 39, 0.35) 0%, transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+}

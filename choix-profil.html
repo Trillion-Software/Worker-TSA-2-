@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA — Que voulez-vous faire ?</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="role-shell">
+    <div class="role-wrap">
+
+      <div class="role-intro">
+        <h1 data-i18n="roleHeadline">Que voulez-vous faire sur Worker TSA ?</h1>
+        <p data-i18n="roleSubtext">Vous pourrez changer de profil plus tard dans les paramètres de votre compte.</p>
+      </div>
+
+      <div class="role-options" id="roleOptions">
+
+        <button type="button" class="role-card" data-role="client">
+          <span class="role-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="role-card-title" data-i18n="roleClientTitle">Je suis client</span>
+          <span class="role-card-desc" data-i18n="roleClientDesc">Je recherche un prestataire de confiance pour un service.</span>
+          <span class="role-card-check">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button type="button" class="role-card" data-role="prestataire">
+          <span class="role-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="8" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+          </span>
+          <span class="role-card-title" data-i18n="roleProviderTitle">Je suis prestataire</span>
+          <span class="role-card-desc" data-i18n="roleProviderDesc">Je propose mes services et je trouve de nouveaux clients.</span>
+          <span class="role-card-check">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+      </div>
+
+      <button type="button" class="btn-primary role-continue" id="roleContinue" data-i18n="btnContinue" disabled>Continuer</button>
+
+    </div>
+  </main>
+
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

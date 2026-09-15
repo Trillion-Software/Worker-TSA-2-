@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA — Connexion ou création de compte</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="lang-switch">
+    <button type="button" class="lang-option is-active" data-lang="fr">FR</button>
+    <button type="button" class="lang-option" data-lang="en">EN</button>
+  </div>
+
+  <div class="auth-shell">
+
+    <!-- Panneau de marque -->
+    <aside class="auth-brand">
+      <div class="brand-mark">
+        <img src="logo-icon.png" alt="Worker TSA" class="brand-mark-icon">
+        <span class="brand-mark-text">Worker <span>TSA</span></span>
+      </div>
+
+      <div class="auth-brand-body">
+        <h1 data-i18n="brandHeadline">Trouvez le bon prestataire, en toute confiance</h1>
+        <p data-i18n="brandText">Worker TSA met en relation clients et prestataires de services pour des missions simples comme pour les projets plus complexes.</p>
+      </div>
+
+      <div class="auth-brand-points">
+        <div class="auth-brand-point">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="point1">Profils de prestataires vérifiés</span>
+        </div>
+        <div class="auth-brand-point">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="point2">Mise en contact directe, sans intermédiaire caché</span>
+        </div>
+        <div class="auth-brand-point">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="point3">Avis authentiques laissés par les clients</span>
+        </div>
+      </div>
+
+      <p class="auth-brand-footer" data-i18n="brandFooter">© 2026 Worker TSA. Tous droits réservés.</p>
+    </aside>
+
+    <!-- Panneau formulaire -->
+    <main class="auth-form-panel">
+      <div class="auth-form-wrap">
+
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab is-active" data-tab="login" data-i18n="tabLogin">Connexion</button>
+          <button type="button" class="auth-tab" data-tab="signup" data-i18n="tabSignup">Créer un compte</button>
+        </div>
+
+        <h2 class="auth-heading" id="authHeading" data-i18n="authLoginHeading">Content de vous revoir</h2>
+        <p class="auth-subheading" id="authSubheading" data-i18n="authLoginSubheading">Connectez-vous pour retrouver vos prestataires et vos réservations.</p>
+
+        <!-- Formulaire de connexion -->
+        <form class="auth-form is-active" data-form="login" id="loginForm" novalidate>
+          <div class="field" id="loginEmailField">
+            <label for="loginEmail" data-i18n="labelEmail">Adresse e-mail</label>
+            <input type="email" id="loginEmail" name="email" placeholder="vous@exemple.com" data-i18n-placeholder="placeholderEmail" autocomplete="email">
+            <span class="field-error"></span>
+          </div>
+
+          <div class="field" id="loginPasswordField">
+            <div class="field-row">
+              <label for="loginPassword" data-i18n="labelPassword">Mot de passe</label>
+              <a href="#" class="link-inline" data-i18n="forgotPassword">Mot de passe oublié ?</a>
+            </div>
+            <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password">
+            <span class="field-error"></span>
+          </div>
+
+          <button type="submit" class="btn-primary" data-i18n="btnLogin">Se connecter</button>
+        </form>
+
+        <!-- Formulaire de création de compte -->
+        <form class="auth-form" data-form="signup" id="signupForm" novalidate>
+          <div class="field" id="signupNameField">
+            <label for="signupName" data-i18n="labelName">Nom complet</label>
+            <input type="text" id="signupName" name="name" placeholder="Prénom et nom" data-i18n-placeholder="placeholderName" autocomplete="name">
+            <span class="field-error"></span>
+          </div>
+
+          <div class="field" id="signupEmailField">
+            <label for="signupEmail" data-i18n="labelEmail">Adresse e-mail</label>
+            <input type="email" id="signupEmail" name="email" placeholder="vous@exemple.com" data-i18n-placeholder="placeholderEmail" autocomplete="email">
+            <span class="field-error"></span>
+          </div>
+
+          <div class="field" id="signupPasswordField">
+            <label for="signupPassword" data-i18n="labelPassword">Mot de passe</label>
+            <input type="password" id="signupPassword" name="password" placeholder="6 caractères minimum" data-i18n-placeholder="placeholderPasswordMin" autocomplete="new-password">
+            <span class="field-error"></span>
+          </div>
+
+          <div class="field" id="signupConfirmField">
+            <label for="signupConfirm" data-i18n="labelConfirm">Confirmer le mot de passe</label>
+            <input type="password" id="signupConfirm" name="confirm" placeholder="••••••••" autocomplete="new-password">
+            <span class="field-error"></span>
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="signupTerms" name="terms">
+            <span data-i18n="termsText">J'accepte les conditions d'utilisation et la politique de confidentialité de Worker TSA.</span>
+          </label>
+
+          <button type="submit" class="btn-primary" data-i18n="btnSignup">Créer mon compte</button>
+        </form>
+
+        <p class="auth-switch" id="authSwitchLine">
+          <span id="switchText" data-i18n="switchTextLogin">Pas encore de compte ?</span>
+          <button type="button" data-switch-to="signup" class="link-inline" id="switchBtn" data-i18n="switchBtnLogin">Créer un compte</button>
+        </p>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA — Services disponibles</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="services-shell">
+    <div class="services-wrap">
+
+      <div class="role-intro">
+        <h1 data-i18n="servicesHeadline">Quel service recherchez-vous ?</h1>
+        <p data-i18n="servicesSubtext">Choisissez une catégorie pour voir les prestataires disponibles près de vous.</p>
+      </div>
+
+      <div class="services-search">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input type="text" placeholder="Rechercher un service..." data-i18n-placeholder="servicesSearchPlaceholder">
+      </div>
+
+      <div class="services-grid">
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🏗️</span>
+          <span class="service-name" data-i18n="svcEngineering">Ingénierie &amp; Architecture</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🛠️</span>
+          <span class="service-name" data-i18n="svcMechanics">Mécanique &amp; Électricité</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🧱</span>
+          <span class="service-name" data-i18n="svcMasonry">Maçonnerie &amp; Menuiserie</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🩺</span>
+          <span class="service-name" data-i18n="svcMedicine">Médecine &amp; Infirmerie</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">✂️</span>
+          <span class="service-name" data-i18n="svcHair">Coiffure &amp; Couture</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🌿</span>
+          <span class="service-name" data-i18n="svcDomestic">Travaux domestiques &amp; Jardinerie</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🧼</span>
+          <span class="service-name" data-i18n="svcCleaning">Lavage &amp; Entretien</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">📊</span>
+          <span class="service-name" data-i18n="svcAccounting">Comptabilité &amp; Secrétariat</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🍽️</span>
+          <span class="service-name" data-i18n="svcCatering">Restauration &amp; Hôtellerie</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🚚</span>
+          <span class="service-name" data-i18n="svcTransport">Transport &amp; Logistique</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">📷</span>
+          <span class="service-name" data-i18n="svcPhoto">Photographie &amp; Organisation</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">⚖️</span>
+          <span class="service-name" data-i18n="svcAdmin">Administration publique &amp; Juridique</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🏋️</span>
+          <span class="service-name" data-i18n="svcFitness">Fitness &amp; Gymnastique</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🌾</span>
+          <span class="service-name" data-i18n="svcAgriculture">Agriculture &amp; Agro-industrie</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">💊</span>
+          <span class="service-name" data-i18n="svcPharmacy">Pharmacie &amp; Biologie médicale</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🎓</span>
+          <span class="service-name" data-i18n="svcTraining">Formation &amp; Enseignement</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🏦</span>
+          <span class="service-name" data-i18n="svcBanking">Banque &amp; Établissement financier</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">💻</span>
+          <span class="service-name" data-i18n="svcTelecom">Télécommunication &amp; Informatique</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🏢</span>
+          <span class="service-name" data-i18n="svcRealEstate">Génie civil &amp; Agent immobilier</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🤝</span>
+          <span class="service-name" data-i18n="svcSocial">Action sociale &amp; Humanitaire (ONG)</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🧭</span>
+          <span class="service-name" data-i18n="svcCoaching">Coaching &amp; Assistant personnel</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">📦</span>
+          <span class="service-name" data-i18n="svcImportExport">Importation-exportation &amp; Transit</span>
+        </button>
+
+        <button type="button" class="service-card">
+          <span class="service-icon">🛡️</span>
+          <span class="service-name" data-i18n="svcSecurity">Sécurité privée &amp; Gardiennage</span>
+        </button>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="splash-shell" id="splashShell">
+
+    <div class="splash-rays"></div>
+
+    <div class="splash-content">
+      <img src="logo-full.png" alt="Worker TSA" class="splash-logo">
+    </div>
+
+    <div class="splash-pedestal">
+      <span class="splash-moss splash-moss-1"></span>
+      <span class="splash-moss splash-moss-2"></span>
+      <span class="splash-moss splash-moss-3"></span>
+      <div class="splash-disc"></div>
+      <div class="splash-glow"></div>
+    </div>
+
+  </main>
+
+  <script>
+    // Enchaîne automatiquement vers la page de connexion après le splash.
+    setTimeout(() => {
+      document.getElementById('splashShell').classList.add('is-fading');
+    }, 2200);
+
+    setTimeout(() => {
+      window.location.href = 'connexion.html';
+    }, 2700);
+  </script>
+</body>
+</html>
