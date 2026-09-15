@@ -13,113 +13,131 @@
     <button type="button" class="lang-option" data-lang="en">EN</button>
   </div>
 
-  <div class="auth-shell">
+  <main class="dauth-shell">
 
-    <!-- Panneau de marque -->
-    <aside class="auth-brand">
-      <div class="brand-mark">
-        <img src="logo-icon.png" alt="Worker TSA" class="brand-mark-icon">
-        <span class="brand-mark-text">Worker <span>TSA</span></span>
-      </div>
+    <div class="dauth-wave"></div>
+    <div class="dauth-pedestal-texture"></div>
 
-      <div class="auth-brand-body">
-        <h1 data-i18n="brandHeadline">Trouvez le bon prestataire, en toute confiance</h1>
-        <p data-i18n="brandText">Worker TSA met en relation clients et prestataires de services pour des missions simples comme pour les projets plus complexes.</p>
-      </div>
+    <div class="dauth-header">
+      <img src="logo-full.png" alt="Worker TSA" class="dauth-logo">
+    </div>
 
-      <div class="auth-brand-points">
-        <div class="auth-brand-point">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span data-i18n="point1">Profils de prestataires vérifiés</span>
-        </div>
-        <div class="auth-brand-point">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span data-i18n="point2">Mise en contact directe, sans intermédiaire caché</span>
-        </div>
-        <div class="auth-brand-point">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span data-i18n="point3">Avis authentiques laissés par les clients</span>
-        </div>
-      </div>
+    <div class="dauth-card">
 
-      <p class="auth-brand-footer" data-i18n="brandFooter">© 2026 Worker TSA. Tous droits réservés.</p>
-    </aside>
+      <h1 class="dauth-heading" id="authHeading" data-i18n="authLoginHeading">Connexion</h1>
+      <p class="dauth-subheading" id="authSubheading" data-i18n="authLoginSubheading">Connectez-vous à votre compte pour continuer</p>
 
-    <!-- Panneau formulaire -->
-    <main class="auth-form-panel">
-      <div class="auth-form-wrap">
+      <!-- Formulaire de connexion -->
+      <form class="dauth-form is-active" data-form="login" id="loginForm" novalidate>
 
-        <div class="auth-tabs">
-          <button type="button" class="auth-tab is-active" data-tab="login" data-i18n="tabLogin">Connexion</button>
-          <button type="button" class="auth-tab" data-tab="signup" data-i18n="tabSignup">Créer un compte</button>
+        <div class="pill-field" id="loginEmailField">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h15A1.5 1.5 0 0 1 21 6.5v11A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5v-11z" stroke="#fff" stroke-width="1.6"/><path d="M4 6.5l8 6.5 8-6.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <input type="email" id="loginEmail" name="email" placeholder="Adresse e-mail" data-i18n-placeholder="placeholderEmail" autocomplete="email">
+          <span class="field-error"></span>
         </div>
 
-        <h2 class="auth-heading" id="authHeading" data-i18n="authLoginHeading">Content de vous revoir</h2>
-        <p class="auth-subheading" id="authSubheading" data-i18n="authLoginSubheading">Connectez-vous pour retrouver vos prestataires et vos réservations.</p>
+        <div class="pill-field" id="loginPasswordField">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="10.5" width="14" height="9" rx="1.6" stroke="#fff" stroke-width="1.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#fff" stroke-width="1.6"/></svg>
+          </span>
+          <input type="password" id="loginPassword" name="password" placeholder="Mot de passe" autocomplete="current-password">
+          <button type="button" class="pill-eye" data-target="loginPassword" aria-label="Afficher le mot de passe">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="#fff" stroke-width="1.6"/></svg>
+          </button>
+          <span class="field-error"></span>
+        </div>
 
-        <!-- Formulaire de connexion -->
-        <form class="auth-form is-active" data-form="login" id="loginForm" novalidate>
-          <div class="field" id="loginEmailField">
-            <label for="loginEmail" data-i18n="labelEmail">Adresse e-mail</label>
-            <input type="email" id="loginEmail" name="email" placeholder="vous@exemple.com" data-i18n-placeholder="placeholderEmail" autocomplete="email">
-            <span class="field-error"></span>
-          </div>
-
-          <div class="field" id="loginPasswordField">
-            <div class="field-row">
-              <label for="loginPassword" data-i18n="labelPassword">Mot de passe</label>
-              <a href="#" class="link-inline" data-i18n="forgotPassword">Mot de passe oublié ?</a>
-            </div>
-            <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password">
-            <span class="field-error"></span>
-          </div>
-
-          <button type="submit" class="btn-primary" data-i18n="btnLogin">Se connecter</button>
-        </form>
-
-        <!-- Formulaire de création de compte -->
-        <form class="auth-form" data-form="signup" id="signupForm" novalidate>
-          <div class="field" id="signupNameField">
-            <label for="signupName" data-i18n="labelName">Nom complet</label>
-            <input type="text" id="signupName" name="name" placeholder="Prénom et nom" data-i18n-placeholder="placeholderName" autocomplete="name">
-            <span class="field-error"></span>
-          </div>
-
-          <div class="field" id="signupEmailField">
-            <label for="signupEmail" data-i18n="labelEmail">Adresse e-mail</label>
-            <input type="email" id="signupEmail" name="email" placeholder="vous@exemple.com" data-i18n-placeholder="placeholderEmail" autocomplete="email">
-            <span class="field-error"></span>
-          </div>
-
-          <div class="field" id="signupPasswordField">
-            <label for="signupPassword" data-i18n="labelPassword">Mot de passe</label>
-            <input type="password" id="signupPassword" name="password" placeholder="6 caractères minimum" data-i18n-placeholder="placeholderPasswordMin" autocomplete="new-password">
-            <span class="field-error"></span>
-          </div>
-
-          <div class="field" id="signupConfirmField">
-            <label for="signupConfirm" data-i18n="labelConfirm">Confirmer le mot de passe</label>
-            <input type="password" id="signupConfirm" name="confirm" placeholder="••••••••" autocomplete="new-password">
-            <span class="field-error"></span>
-          </div>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="signupTerms" name="terms">
-            <span data-i18n="termsText">J'accepte les conditions d'utilisation et la politique de confidentialité de Worker TSA.</span>
+        <div class="dauth-row">
+          <label class="dauth-checkbox">
+            <input type="checkbox" id="rememberMe">
+            <span data-i18n="rememberMe">Se souvenir de moi</span>
           </label>
+          <a href="#" class="dauth-link" data-i18n="forgotPassword">Mot de passe oublié ?</a>
+        </div>
 
-          <button type="submit" class="btn-primary" data-i18n="btnSignup">Créer mon compte</button>
-        </form>
+        <button type="submit" class="btn-pill-primary">
+          <span data-i18n="btnLogin">Se connecter</span>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
 
-        <p class="auth-switch" id="authSwitchLine">
-          <span id="switchText" data-i18n="switchTextLogin">Pas encore de compte ?</span>
-          <button type="button" data-switch-to="signup" class="link-inline" id="switchBtn" data-i18n="switchBtnLogin">Créer un compte</button>
-        </p>
+      <!-- Formulaire de création de compte -->
+      <form class="dauth-form" data-form="signup" id="signupForm" novalidate>
 
+        <div class="pill-field" id="signupNameField">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3.4" stroke="#fff" stroke-width="1.6"/><path d="M5 19c0-3.3 3.1-5.3 7-5.3s7 2 7 5.3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <input type="text" id="signupName" name="name" placeholder="Nom complet" data-i18n-placeholder="labelName" autocomplete="name">
+          <span class="field-error"></span>
+        </div>
+
+        <div class="pill-field" id="signupEmailField">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h15A1.5 1.5 0 0 1 21 6.5v11A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5v-11z" stroke="#fff" stroke-width="1.6"/><path d="M4 6.5l8 6.5 8-6.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <input type="email" id="signupEmail" name="email" placeholder="Adresse e-mail" data-i18n-placeholder="placeholderEmail" autocomplete="email">
+          <span class="field-error"></span>
+        </div>
+
+        <div class="pill-field" id="signupPasswordField">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="10.5" width="14" height="9" rx="1.6" stroke="#fff" stroke-width="1.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#fff" stroke-width="1.6"/></svg>
+          </span>
+          <input type="password" id="signupPassword" name="password" placeholder="6 caractères minimum" data-i18n-placeholder="placeholderPasswordMin" autocomplete="new-password">
+          <button type="button" class="pill-eye" data-target="signupPassword" aria-label="Afficher le mot de passe">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="#fff" stroke-width="1.6"/></svg>
+          </button>
+          <span class="field-error"></span>
+        </div>
+
+        <div class="pill-field" id="signupConfirmField">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="10.5" width="14" height="9" rx="1.6" stroke="#fff" stroke-width="1.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#fff" stroke-width="1.6"/></svg>
+          </span>
+          <input type="password" id="signupConfirm" name="confirm" placeholder="Confirmer le mot de passe" data-i18n-placeholder="labelConfirm" autocomplete="new-password">
+          <button type="button" class="pill-eye" data-target="signupConfirm" aria-label="Afficher le mot de passe">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="#fff" stroke-width="1.6"/></svg>
+          </button>
+          <span class="field-error"></span>
+        </div>
+
+        <label class="dauth-checkbox dauth-checkbox-terms">
+          <input type="checkbox" id="signupTerms">
+          <span data-i18n="termsText">J'accepte les conditions d'utilisation et la politique de confidentialité de Worker TSA.</span>
+        </label>
+
+        <button type="submit" class="btn-pill-primary">
+          <span data-i18n="btnSignup">Créer mon compte</span>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
+
+      <div class="dauth-divider"><span data-i18n="orDivider">OU</span></div>
+
+      <button type="button" class="btn-pill-secondary">
+        <span class="pill-icon pill-icon-inline">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h15A1.5 1.5 0 0 1 21 6.5v11A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5v-11z" stroke="#fff" stroke-width="1.6"/><path d="M4 6.5l8 6.5 8-6.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span data-i18n="continueOtherEmail">Continuer avec un autre compte e-mail</span>
+      </button>
+
+      <div class="dauth-switch">
+        <span class="dauth-switch-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="8" r="3.4" stroke="#fff" stroke-width="1.6"/><path d="M3 19c0-3.3 3.1-5.3 7-5.3 1 0 1.9.13 2.7.37" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M18 9v6M15 12h6" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <div class="dauth-switch-text">
+          <p id="switchText" data-i18n="switchTextLogin">Vous n'avez pas de compte ?</p>
+          <button type="button" data-switch-to="signup" id="switchBtn" data-i18n="switchBtnLogin">Créer un compte</button>
+        </div>
+        <svg class="dauth-switch-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-    </main>
 
-  </div>
+    </div>
+
+  </main>
 
   <script src="i18n.js"></script>
   <script src="script.js"></script>

@@ -19,15 +19,18 @@ const translations = {
   tabLogin: { fr: 'Connexion', en: 'Log in' },
   tabSignup: { fr: 'Créer un compte', en: 'Sign up' },
 
-  authLoginHeading: { fr: 'Content de vous revoir', en: 'Welcome back' },
-  authLoginSubheading: { fr: 'Connectez-vous pour retrouver vos prestataires et vos réservations.', en: 'Log in to find your providers and bookings again.' },
+  authLoginHeading: { fr: 'Connexion', en: 'Log in' },
+  authLoginSubheading: { fr: 'Connectez-vous à votre compte pour continuer', en: 'Log in to your account to continue' },
   authSignupHeading: { fr: 'Créer votre compte', en: 'Create your account' },
   authSignupSubheading: { fr: 'Rejoignez Worker TSA pour trouver un prestataire ou proposer vos services.', en: 'Join Worker TSA to find a provider or offer your services.' },
 
-  switchTextLogin: { fr: 'Pas encore de compte ?', en: "Don't have an account yet?" },
+  switchTextLogin: { fr: "Vous n'avez pas de compte ?", en: "Don't have an account?" },
   switchBtnLogin: { fr: 'Créer un compte', en: 'Sign up' },
   switchTextSignup: { fr: 'Déjà un compte ?', en: 'Already have an account?' },
   switchBtnSignup: { fr: 'Se connecter', en: 'Log in' },
+  rememberMe: { fr: 'Se souvenir de moi', en: 'Remember me' },
+  orDivider: { fr: 'OU', en: 'OR' },
+  continueOtherEmail: { fr: 'Continuer avec un autre compte e-mail', en: 'Continue with another email' },
 
   labelEmail: { fr: 'Adresse e-mail', en: 'Email address' },
   labelPassword: { fr: 'Mot de passe', en: 'Password' },

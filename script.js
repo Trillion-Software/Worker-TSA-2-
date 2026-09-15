@@ -180,6 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Affichage / masquage du mot de passe (icône œil) ---
+  document.querySelectorAll('.pill-eye').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.target);
+      if (!target) return;
+      target.type = target.type === 'password' ? 'text' : 'password';
+    });
+  });
+
   // --- Page profil client (photo, prénom, nom, téléphone) ---
   const avatarCircle = document.getElementById('avatarCircle');
   const avatarInput = document.getElementById('avatarInput');
