@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA — Abonnement</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="sub-shell">
+    <div class="sub-wrap">
+
+      <div class="role-intro">
+        <h1 data-i18n="subHeadline">Choisissez votre abonnement</h1>
+        <p data-i18n="subSubtext">Un abonnement actif est nécessaire pour apparaître auprès des clients.</p>
+      </div>
+
+      <div class="sub-plans" id="subPlans">
+
+        <button type="button" class="sub-plan" data-plan="monthly" data-amount="1000">
+          <span class="sub-plan-name" data-i18n="subMonthly">Mensuel</span>
+          <span class="sub-plan-price">1000 F<span data-i18n="subPerMonth"> / mois</span></span>
+          <span class="sub-plan-check">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#7A1027" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button type="button" class="sub-plan" data-plan="quarterly" data-amount="2500">
+          <span class="sub-plan-badge" data-i18n="subBestValue">Meilleure offre</span>
+          <span class="sub-plan-name" data-i18n="subQuarterly">3 mois</span>
+          <span class="sub-plan-price">2500 F<span data-i18n="subPer3Months"> / 3 mois</span></span>
+          <span class="sub-plan-check">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#7A1027" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+        <button type="button" class="sub-plan" data-plan="yearly" data-amount="8000">
+          <span class="sub-plan-name" data-i18n="subYearly">Annuel</span>
+          <span class="sub-plan-price">8000 F<span data-i18n="subPerYear"> / an</span></span>
+          <span class="sub-plan-check">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#7A1027" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+
+      </div>
+
+      <div class="sub-payment">
+        <p class="provider-section-label" data-i18n="subPaymentTitle">Moyen de paiement</p>
+        <p class="sub-payment-pending" data-i18n="subPaymentPending">Les moyens de paiement seront disponibles très prochainement.</p>
+      </div>
+
+      <button type="button" class="btn-pill-primary" id="subContinue" disabled>
+        <span data-i18n="btnSubscribe">S'abonner</span>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+    </div>
+  </main>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

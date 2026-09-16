@@ -302,6 +302,7 @@ button {
 }
 
 .field input {
+  width: 100%;
   height: 48px;
   padding: 0 14px;
   border: 1px solid var(--border);
@@ -441,7 +442,7 @@ button {
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
-  background: var(--white);
+  background: radial-gradient(ellipse 120% 50% at 50% 0%, #1c1c1c 0%, #060606 60%), #030303;
 }
 
 .role-wrap {
@@ -456,14 +457,15 @@ button {
 
 .role-intro h1 {
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.01em;
   margin: 0 0 10px;
+  color: #E01B2E;
 }
 
 .role-intro p {
   font-size: 16.5px;
-  color: var(--ink-muted);
+  color: rgba(255, 255, 255, 0.82);
   margin: 0;
   line-height: 1.55;
 }
@@ -478,8 +480,8 @@ button {
 .role-card {
   position: relative;
   text-align: left;
-  background: var(--input-bg);
-  border: 1.5px solid var(--border);
+  background: #0B0B0C;
+  border: 1.5px solid rgba(224, 27, 46, 0.4);
   border-radius: var(--radius-m);
   padding: 28px 22px;
   cursor: pointer;
@@ -490,7 +492,7 @@ button {
 }
 
 .role-card:hover {
-  border-color: #E3B9C1;
+  border-color: rgba(224, 27, 46, 0.85);
 }
 
 .role-card:active {
@@ -498,20 +500,24 @@ button {
 }
 
 .role-card.is-selected {
-  background: var(--bordeaux-soft);
-  border-color: var(--bordeaux);
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  border-color: #E01B2E;
+  box-shadow: 0 10px 28px rgba(224, 27, 46, 0.35);
 }
 
 .role-card-icon {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
-  background: var(--white);
-  color: var(--bordeaux);
+  background: linear-gradient(160deg, #E01B2E, #7A1027);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border);
+}
+
+.role-card.is-selected .role-card-icon {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .role-card-icon svg {
@@ -521,24 +527,28 @@ button {
 
 .role-card-title {
   font-size: 18px;
-  font-weight: 600;
-  color: var(--ink);
+  font-weight: 700;
+  color: #fff;
 }
 
 .role-card-desc {
-  font-size: 15px;
-  color: var(--ink-muted);
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.65);
   line-height: 1.5;
+}
+
+.role-card.is-selected .role-card-desc {
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .role-card-check {
   position: absolute;
   top: 18px;
   right: 18px;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: var(--bordeaux);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -562,9 +572,10 @@ button {
 }
 
 .role-continue:disabled {
-  background: #E7DADD;
-  color: #B39BA1;
+  background: #2A2A2C;
+  color: rgba(255, 255, 255, 0.4);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 @media (max-width: 560px) {
@@ -668,7 +679,7 @@ button {
 .services-shell {
   min-height: 100vh;
   padding: 48px 24px 64px;
-  background: var(--white);
+  background: radial-gradient(ellipse 120% 50% at 50% 0%, #1c1c1c 0%, #060606 60%), #030303;
   display: flex;
   justify-content: center;
 }
@@ -682,13 +693,13 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 48px;
+  height: 50px;
   padding: 0 16px;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-s);
+  background: #0B0B0C;
+  border: 1.5px solid rgba(224, 27, 46, 0.4);
+  border-radius: 999px;
   margin-bottom: 32px;
-  color: var(--ink-muted);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .services-search input {
@@ -698,7 +709,11 @@ button {
   outline: none;
   font-family: inherit;
   font-size: 16px;
-  color: var(--ink);
+  color: #fff;
+}
+
+.services-search input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .services-search svg {
@@ -714,13 +729,14 @@ button {
 }
 
 .service-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   text-align: center;
-  background: var(--input-bg);
-  border: 1.5px solid var(--border);
+  background: #0B0B0C;
+  border: 1.5px solid rgba(224, 27, 46, 0.35);
   border-radius: var(--radius-m);
   padding: 26px 12px;
   cursor: pointer;
@@ -728,12 +744,17 @@ button {
 }
 
 .service-card:hover {
-  border-color: var(--bordeaux);
-  background: var(--bordeaux-soft);
+  border-color: #E01B2E;
 }
 
 .service-card:active {
   transform: scale(0.98);
+}
+
+.service-card.is-selected {
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  border-color: #E01B2E;
+  box-shadow: 0 10px 24px rgba(224, 27, 46, 0.35);
 }
 
 .service-icon {
@@ -743,8 +764,43 @@ button {
 .service-name {
   font-size: 15px;
   font-weight: 600;
-  color: var(--ink);
+  color: #fff;
   line-height: 1.35;
+}
+
+.service-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.service-check svg {
+  width: 11px;
+  height: 11px;
+}
+
+.service-card.is-selected .service-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.services-continue-wrap {
+  margin-top: 28px;
+  display: none;
+}
+
+.services-continue-wrap.is-visible {
+  display: block;
 }
 
 @media (max-width: 620px) {
@@ -934,6 +990,14 @@ button {
   color: #FF8A93;
 }
 
+.pill-field.has-error {
+  border-color: #FF3B4E;
+}
+
+.pill-field.has-error .field-error {
+  display: block;
+}
+
 .dauth-row {
   display: flex;
   align-items: center;
@@ -1107,4 +1171,408 @@ button {
   .dauth-shell {
     padding-top: 56px;
   }
+}
+
+/* ==========================================================================
+   Page profil prestataire
+   ========================================================================== */
+
+.provider-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 64px;
+  background: radial-gradient(ellipse 120% 50% at 50% 0%, #1c1c1c 0%, #060606 60%), #030303;
+}
+
+.provider-wrap {
+  width: 100%;
+  max-width: 460px;
+}
+
+.provider-wrap .role-intro h1 {
+  color: #E01B2E;
+  font-size: 24px;
+}
+
+.provider-wrap .role-intro p {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14.5px;
+}
+
+.provider-wrap form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Champs texte (réutilise .field, redéfini ici en thème sombre) */
+.provider-wrap .field label {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.provider-wrap .field input,
+.provider-wrap .field textarea {
+  background: #0B0B0C;
+  border: 1.5px solid rgba(224, 27, 46, 0.4);
+  color: #fff;
+  font-family: inherit;
+}
+
+.provider-wrap .field textarea {
+  border-radius: var(--radius-m);
+  padding: 12px 14px;
+  font-size: 15px;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.provider-wrap .field input::placeholder,
+.provider-wrap .field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.provider-wrap .field input:focus,
+.provider-wrap .field textarea:focus {
+  border-color: #E01B2E;
+  box-shadow: 0 0 0 3px rgba(224, 27, 46, 0.18);
+  background: #0B0B0C;
+}
+
+.provider-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Photo de profil (thème sombre) */
+.provider-wrap .avatar-circle {
+  background: #0B0B0C;
+  border: 1.5px dashed rgba(224, 27, 46, 0.5);
+  color: rgba(224, 27, 46, 0.7);
+}
+
+.provider-wrap .avatar-hint {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Section générique (portfolio, document) */
+.provider-section-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.provider-section-hint {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+/* Portfolio : 3 photos */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.portfolio-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-s);
+  background: #0B0B0C;
+  border: 1.5px dashed rgba(224, 27, 46, 0.5);
+  color: rgba(224, 27, 46, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.portfolio-slot svg {
+  width: 22px;
+  height: 22px;
+}
+
+.portfolio-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portfolio-slot.has-image svg {
+  display: none;
+}
+
+/* Coordonnées avec bouton d'action (appel / whatsapp) */
+.input-with-action {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-action input {
+  flex: 1;
+  height: 48px;
+  padding: 0 50px 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.provider-wrap .input-with-action input {
+  background: #0B0B0C;
+  border: 1.5px solid rgba(224, 27, 46, 0.4);
+  color: #fff;
+}
+
+.input-action-btn {
+  position: absolute;
+  right: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.input-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.input-action-call {
+  background: #E01B2E;
+}
+
+.input-action-whatsapp {
+  background: #1E1E1E;
+}
+
+/* Tabs justificatif (pièce d'identité / document d'entreprise) */
+.doc-tabs {
+  background: #0B0B0C;
+  border: 1px solid rgba(224, 27, 46, 0.3);
+  margin-bottom: 14px;
+}
+
+.doc-tabs .auth-tab {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.doc-tabs .auth-tab.is-active {
+  background: linear-gradient(160deg, #E01B2E, #7A1027);
+  color: #fff;
+  box-shadow: none;
+}
+
+.doc-panel {
+  display: none;
+}
+
+.doc-panel.is-active {
+  display: block;
+}
+
+.doc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.doc-grid-single {
+  grid-template-columns: 1fr;
+}
+
+.doc-slot {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-s);
+  background: #0B0B0C;
+  border: 1.5px dashed rgba(224, 27, 46, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.doc-slot svg {
+  width: 24px;
+  height: 24px;
+}
+
+.doc-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doc-slot.has-image svg,
+.doc-slot.has-image span {
+  display: none;
+}
+
+@media (max-width: 380px) {
+  .provider-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Page abonnement
+   ========================================================================== */
+
+.sub-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 64px;
+  background: radial-gradient(ellipse 120% 50% at 50% 0%, #1c1c1c 0%, #060606 60%), #030303;
+}
+
+.sub-wrap {
+  width: 100%;
+  max-width: 440px;
+}
+
+.sub-wrap .role-intro h1 {
+  color: #E01B2E;
+  font-size: 25px;
+}
+
+.sub-wrap .role-intro p {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14.5px;
+}
+
+.sub-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.sub-plan {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  background: #0B0B0C;
+  border: 1.5px solid rgba(224, 27, 46, 0.4);
+  border-radius: var(--radius-m);
+  padding: 20px 22px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.08s ease;
+}
+
+.sub-plan:hover {
+  border-color: #E01B2E;
+}
+
+.sub-plan:active {
+  transform: scale(0.99);
+}
+
+.sub-plan.is-selected {
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  border-color: #E01B2E;
+  box-shadow: 0 10px 24px rgba(224, 27, 46, 0.35);
+}
+
+.sub-plan-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sub-plan-price {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sub-plan-price span {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sub-plan-badge {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: #fff;
+  color: #7A1027;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.sub-plan-check {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.sub-plan-check svg {
+  width: 12px;
+  height: 12px;
+}
+
+.sub-plan.is-selected .sub-plan-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sub-payment {
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  background: #0B0B0C;
+  border: 1px solid rgba(224, 27, 46, 0.3);
+  border-radius: var(--radius-m);
+}
+
+.sub-payment .provider-section-label {
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.sub-payment-pending {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.5;
 }

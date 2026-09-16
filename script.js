@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('.auth-tab');
-  const forms = document.querySelectorAll('.auth-form');
+  const forms = document.querySelectorAll('.dauth-form');
   const heading = document.getElementById('authHeading');
   const subheading = document.getElementById('authSubheading');
   const switchText = document.getElementById('switchText');
@@ -227,6 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
     roleContinue.addEventListener('click', async () => {
       if (!selectedRole) return;
 
+      localStorage.setItem('wtsaRole', selectedRole);
+
       if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
         const { db, doc, setDoc, auth } = window.wtsaFirebase;
         try {
@@ -239,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (selectedRole === 'client') {
         window.location.href = 'profil-client.html';
       } else {
-        // Le parcours prestataire n'est pas encore construit.
         window.location.href = 'services.html';
       }
     });
@@ -253,6 +254,53 @@ document.addEventListener('DOMContentLoaded', () => {
       target.type = target.type === 'password' ? 'text' : 'password';
     });
   });
+
+  // --- Page liste des services (mode client = navigation libre, mode prestataire = sélection unique) ---
+  const servicesGrid = document.querySelector('.services-grid');
+  if (servicesGrid) {
+    const userRole = localStorage.getItem('wtsaRole');
+    const isProviderMode = userRole === 'prestataire';
+    const continueWrap = document.getElementById('servicesContinueWrap');
+    const continueBtn = document.getElementById('servicesContinue');
+
+    if (isProviderMode) {
+      const headingEl = document.querySelector('[data-i18n="servicesHeadline"]');
+      const subtextEl = document.querySelector('[data-i18n="servicesSubtext"]');
+      if (headingEl) headingEl.setAttribute('data-i18n', 'servicesHeadlineProvider');
+      if (subtextEl) subtextEl.setAttribute('data-i18n', 'servicesSubtextProvider');
+      if (typeof wtsaApplyLang === 'function') wtsaApplyLang(wtsaGetLang());
+      if (continueWrap) continueWrap.classList.add('is-visible');
+
+      let selectedDomain = null;
+
+      servicesGrid.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', () => {
+          servicesGrid.querySelectorAll('.service-card').forEach(c => c.classList.remove('is-selected'));
+          card.classList.add('is-selected');
+          selectedDomain = card.querySelector('.service-name').textContent.trim();
+          if (continueBtn) continueBtn.disabled = false;
+        });
+      });
+
+      if (continueBtn) {
+        continueBtn.addEventListener('click', async () => {
+          if (!selectedDomain) return;
+          localStorage.setItem('wtsaDomain', selectedDomain);
+
+          if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+            const { db, doc, setDoc, auth } = window.wtsaFirebase;
+            try {
+              await setDoc(doc(db, 'users', auth.currentUser.uid), { domain: selectedDomain }, { merge: true });
+            } catch (err) {
+              console.error('Erreur lors de l\'enregistrement du domaine :', err);
+            }
+          }
+
+          window.location.href = 'profil-prestataire.html';
+        });
+      }
+    }
+  }
 
   // --- Page profil client (photo, prénom, nom, téléphone) ---
   const avatarCircle = document.getElementById('avatarCircle');
@@ -325,6 +373,181 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       window.location.href = 'services.html';
+    });
+  }
+
+  // --- Page profil prestataire ---
+  const providerProfileForm = document.getElementById('providerProfileForm');
+  if (providerProfileForm) {
+
+    // Photos du domaine (portfolio, 3 emplacements)
+    const portfolioInput = document.getElementById('portfolioInput');
+    let activePortfolioSlot = null;
+
+    document.querySelectorAll('.portfolio-slot').forEach(slot => {
+      slot.addEventListener('click', () => {
+        activePortfolioSlot = slot;
+        portfolioInput.click();
+      });
+    });
+
+    if (portfolioInput) {
+      portfolioInput.addEventListener('change', () => {
+        const file = portfolioInput.files[0];
+        if (!file || !activePortfolioSlot) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = activePortfolioSlot.querySelector('img');
+          img.src = e.target.result;
+          img.hidden = false;
+          activePortfolioSlot.classList.add('has-image');
+        };
+        reader.readAsDataURL(file);
+        portfolioInput.value = '';
+      });
+    }
+
+    // Tabs justificatif : pièce d'identité / document d'entreprise
+    document.querySelectorAll('[data-doctab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('[data-doctab]').forEach(t => t.classList.toggle('is-active', t === tab));
+        document.querySelectorAll('.doc-panel').forEach(panel => {
+          panel.classList.toggle('is-active', panel.dataset.docpanel === tab.dataset.doctab);
+        });
+      });
+    });
+
+    // Emplacements de documents (recto/verso ou document d'entreprise)
+    const docInput = document.getElementById('docInput');
+    let activeDocSlot = null;
+
+    document.querySelectorAll('.doc-slot').forEach(slot => {
+      slot.addEventListener('click', () => {
+        activeDocSlot = slot;
+        docInput.click();
+      });
+    });
+
+    if (docInput) {
+      docInput.addEventListener('change', () => {
+        const file = docInput.files[0];
+        if (!file || !activeDocSlot) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = activeDocSlot.querySelector('img');
+          img.src = e.target.result;
+          img.hidden = false;
+          activeDocSlot.classList.add('has-image');
+        };
+        reader.readAsDataURL(file);
+        docInput.value = '';
+      });
+    }
+
+    // Boutons d'action cliquables : appeler / ouvrir WhatsApp
+    const callActionBtn = document.getElementById('callActionBtn');
+    if (callActionBtn) {
+      callActionBtn.addEventListener('click', () => {
+        const phone = document.getElementById('providerPhone').value.trim();
+        if (phone) window.location.href = 'tel:' + phone.replace(/\s+/g, '');
+      });
+    }
+
+    const whatsappActionBtn = document.getElementById('whatsappActionBtn');
+    if (whatsappActionBtn) {
+      whatsappActionBtn.addEventListener('click', () => {
+        const wa = document.getElementById('providerWhatsapp').value.trim();
+        if (wa) window.open('https://wa.me/' + wa.replace(/[^\d]/g, ''), '_blank');
+      });
+    }
+
+    // Validation et enregistrement
+    providerProfileForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      let valid = true;
+
+      const checks = [
+        ['providerFirstNameField', 'providerFirstName', v => v.trim().length >= 2, 'Entrez votre prénom.'],
+        ['providerLastNameField', 'providerLastName', v => v.trim().length >= 2, 'Entrez votre nom.'],
+        ['providerRegionField', 'providerRegion', v => v.trim().length >= 2, 'Entrez votre région.'],
+        ['providerCityField', 'providerCity', v => v.trim().length >= 2, 'Entrez votre ville.'],
+        ['providerPhoneField', 'providerPhone', v => v.trim().length >= 8, 'Entrez un numéro de téléphone valide.'],
+        ['providerWhatsappField', 'providerWhatsapp', v => v.trim().length >= 8, 'Entrez un numéro WhatsApp valide.']
+      ];
+
+      const values = {};
+      checks.forEach(([fieldId, inputId, test, message]) => {
+        const field = document.getElementById(fieldId);
+        const input = document.getElementById(inputId);
+        clearError(field);
+        values[inputId] = input.value.trim();
+        if (!test(input.value)) {
+          showError(field, message);
+          valid = false;
+        }
+      });
+
+      if (!valid) return;
+
+      const announcement = document.getElementById('providerAnnouncement').value.trim();
+
+      if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        try {
+          await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            firstName: values.providerFirstName,
+            lastName: values.providerLastName,
+            region: values.providerRegion,
+            city: values.providerCity,
+            phone: values.providerPhone,
+            whatsapp: values.providerWhatsapp,
+            announcement: announcement
+            // Photos (profil, portfolio, pièce d'identité/document) : aperçu local
+            // uniquement pour l'instant, Firebase Storage n'est pas encore configuré.
+          }, { merge: true });
+        } catch (err) {
+          console.error('Erreur lors de l\'enregistrement du profil prestataire :', err);
+        }
+      }
+
+      window.location.href = 'abonnement.html';
+    });
+  }
+
+  // --- Page abonnement ---
+  const subPlans = document.getElementById('subPlans');
+  const subContinue = document.getElementById('subContinue');
+  if (subPlans && subContinue) {
+    let selectedPlan = null;
+
+    subPlans.querySelectorAll('.sub-plan').forEach(plan => {
+      plan.addEventListener('click', () => {
+        subPlans.querySelectorAll('.sub-plan').forEach(p => p.classList.remove('is-selected'));
+        plan.classList.add('is-selected');
+        selectedPlan = { id: plan.dataset.plan, amount: plan.dataset.amount };
+        subContinue.disabled = false;
+      });
+    });
+
+    subContinue.addEventListener('click', async () => {
+      if (!selectedPlan) return;
+
+      if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        try {
+          await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            subscriptionPlan: selectedPlan.id,
+            subscriptionAmount: selectedPlan.amount,
+            subscriptionStatus: 'pending_payment'
+            // Le paiement réel sera branché une fois les moyens de paiement communiqués.
+          }, { merge: true });
+        } catch (err) {
+          console.error('Erreur lors de l\'enregistrement de l\'abonnement :', err);
+        }
+      }
+
+      // Paiement pas encore configuré — on informe l'utilisateur pour l'instant.
+      alert('Le paiement sera bientôt disponible. Votre choix a été enregistré.');
     });
   }
 });
