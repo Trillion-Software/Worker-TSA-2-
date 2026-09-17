@@ -491,10 +491,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!valid) return;
 
       const announcement = document.getElementById('providerAnnouncement').value.trim();
+      let alreadyPublished = false;
 
       if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
-        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        const { db, doc, setDoc, getDoc, auth } = window.wtsaFirebase;
         try {
+          const existing = await getDoc(doc(db, 'users', auth.currentUser.uid));
+          if (existing.exists() && existing.data().profileStatus === 'published') {
+            alreadyPublished = true;
+          }
           await setDoc(doc(db, 'users', auth.currentUser.uid), {
             firstName: values.providerFirstName,
             lastName: values.providerLastName,
@@ -502,7 +507,8 @@ document.addEventListener('DOMContentLoaded', () => {
             city: values.providerCity,
             phone: '+228' + values.providerPhone.replace(/\D/g, ''),
             whatsapp: '+228' + values.providerWhatsapp.replace(/\D/g, ''),
-            announcement: announcement
+            announcement: announcement,
+            lastProfileEditAt: new Date().toISOString()
             // Photos (profil, portfolio, pièce d'identité/document) : aperçu local
             // uniquement pour l'instant, Firebase Storage n'est pas encore configuré.
           }, { merge: true });
@@ -511,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      window.location.href = 'abonnement.html';
+      window.location.href = alreadyPublished ? 'mon-profil.html' : 'abonnement.html';
     });
   }
 
@@ -550,6 +556,10 @@ document.addEventListener('DOMContentLoaded', () => {
     subContinue.addEventListener('click', async () => {
       if (!selectedPlan || !selectedPayment) return;
 
+      const startDate = new Date();
+      const durationDays = { monthly: 30, quarterly: 90, yearly: 365 }[selectedPlan.id] || 30;
+      const endDate = new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+
       if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
         const { db, doc, setDoc, auth } = window.wtsaFirebase;
         try {
@@ -557,16 +567,122 @@ document.addEventListener('DOMContentLoaded', () => {
             subscriptionPlan: selectedPlan.id,
             subscriptionAmount: selectedPlan.amount,
             subscriptionPaymentMethod: selectedPayment,
-            subscriptionStatus: 'pending_payment'
-            // Le paiement réel (envoi de la demande de paiement Tmoney/Flooz) sera branché
-            // une fois l'intégration technique de ces opérateurs confirmée.
+            subscriptionStatus: 'awaiting_proof',
+            subscriptionStartDate: startDate.toISOString(),
+            subscriptionEndDate: endDate.toISOString(),
+            profileStatus: 'awaiting_proof'
           }, { merge: true });
         } catch (err) {
           console.error('Erreur lors de l\'enregistrement de l\'abonnement :', err);
         }
       }
 
-      alert('Une demande de paiement va être envoyée sur votre numéro. (Intégration Tmoney/Flooz à finaliser.)');
+      // Flooz : déclenche la syntaxe USSD via le composeur téléphonique,
+      // sans jamais afficher le code brut dans l'interface du site.
+      if (selectedPayment === 'flooz') {
+        const ussdCode = '*155*2*2*122080*122080*' + selectedPlan.amount + '#';
+        window.location.href = 'tel:' + ussdCode;
+        setTimeout(() => { window.location.href = 'mon-profil.html'; }, 600);
+        return;
+      }
+
+      window.location.href = 'mon-profil.html';
+    });
+  }
+
+  // --- Page "Mon profil" ---
+  const mpStates = document.querySelectorAll('.mp-state');
+  if (mpStates.length && window.wtsaFirebase) {
+    const { auth, db, doc, getDoc, setDoc, onAuthStateChanged } = window.wtsaFirebase;
+
+    function showMpState(id) {
+      mpStates.forEach(el => el.classList.toggle('is-active', el.id === id));
+    }
+
+    function formatDate(d) {
+      return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    async function renderProfile(uid) {
+      let data = {};
+      try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        if (snap.exists()) data = snap.data();
+      } catch (err) {
+        console.error('Erreur de lecture du profil :', err);
+      }
+
+      if (data.profileStatus === 'published') {
+        showMpState('statePublished');
+
+        document.getElementById('pvName').textContent = [data.firstName, data.lastName].filter(Boolean).join(' ') || '—';
+        document.getElementById('pvDomain').textContent = data.domain || '—';
+        document.getElementById('pvLocation').textContent = [data.city, data.region].filter(Boolean).join(', ') || '—';
+        document.getElementById('pvPhone').textContent = data.phone || '—';
+        document.getElementById('pvWhatsapp').textContent = data.whatsapp || '—';
+        document.getElementById('pvAnnouncement').textContent = data.announcement || '—';
+
+        const countdownValue = document.getElementById('countdownValue');
+        const countdownDates = document.getElementById('countdownDates');
+        if (data.subscriptionEndDate) {
+          const end = new Date(data.subscriptionEndDate);
+          const start = data.subscriptionStartDate ? new Date(data.subscriptionStartDate) : null;
+          const daysLeft = Math.ceil((end - new Date()) / (24 * 60 * 60 * 1000));
+          countdownValue.textContent = daysLeft > 0 ? `${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : 'Abonnement expiré';
+          countdownDates.textContent = start ? `Du ${formatDate(start)} au ${formatDate(end)}` : `Jusqu'au ${formatDate(end)}`;
+        }
+
+        const editBtn = document.getElementById('editProfileBtn');
+        const editNote = document.getElementById('editProfileNote');
+        const lastEdit = data.lastProfileEditAt ? new Date(data.lastProfileEditAt) : null;
+        const nextEditDate = lastEdit ? new Date(lastEdit.getTime() + 14 * 24 * 60 * 60 * 1000) : null;
+
+        if (nextEditDate && nextEditDate > new Date()) {
+          editBtn.disabled = true;
+          editNote.textContent = `Prochaine modification possible le ${formatDate(nextEditDate)}.`;
+        } else {
+          editBtn.disabled = false;
+          editNote.textContent = '';
+          editBtn.addEventListener('click', () => {
+            window.location.href = 'profil-prestataire.html';
+          });
+        }
+
+      } else if (data.profileStatus === 'awaiting_proof' && !data.proofSentAt) {
+        showMpState('stateProof');
+      } else {
+        showMpState('statePending');
+      }
+    }
+
+    const sendProofBtn = document.getElementById('sendProofBtn');
+    if (sendProofBtn) {
+      sendProofBtn.addEventListener('click', async () => {
+        const subject = encodeURIComponent("Preuve de transaction d'abonnement !!");
+        const body = encodeURIComponent('Bonjour,\n\nVeuillez trouver ci-joint la capture d\'écran de ma transaction d\'abonnement Worker TSA.\n\n(Pensez à joindre votre capture d\'écran avant l\'envoi.)');
+        window.location.href = `mailto:trillionsoftware@protonmail.com?subject=${subject}&body=${body}`;
+
+        if (auth.currentUser) {
+          try {
+            await setDoc(doc(db, 'users', auth.currentUser.uid), {
+              proofSentAt: new Date().toISOString(),
+              profileStatus: 'pending_review'
+            }, { merge: true });
+          } catch (err) {
+            console.error('Erreur lors de l\'enregistrement de l\'envoi de la preuve :', err);
+          }
+        }
+
+        showMpState('statePending');
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'connexion.html';
+        return;
+      }
+      renderProfile(user.uid);
     });
   }
 });

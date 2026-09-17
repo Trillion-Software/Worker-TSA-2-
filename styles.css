@@ -826,7 +826,7 @@ button {
   min-height: 100vh;
   background: #000;
   overflow: hidden;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.15s ease;
 }
 
 .splash-shell.is-fading {
@@ -1694,12 +1694,23 @@ button {
   flex-shrink: 0;
 }
 
+.payment-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
 .payment-badge-tmoney {
-  background: #F7A400;
+  background: #0B1F6B;
 }
 
 .payment-badge-flooz {
-  background: #0072CE;
+  background: #FFC72C;
+  border-radius: 7px;
+  transform: rotate(45deg);
+}
+
+.payment-badge-flooz svg {
+  transform: rotate(-45deg);
 }
 
 .payment-option-name {
@@ -1737,4 +1748,167 @@ button {
 .payment-option.is-selected .payment-option-check {
   opacity: 1;
   transform: scale(1);
+}
+
+/* ==========================================================================
+   Page "Mon profil" (preuve de paiement, attente, profil publié)
+   ========================================================================== */
+
+.mp-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 64px;
+  background: var(--white);
+}
+
+.mp-wrap {
+  width: 100%;
+  max-width: 460px;
+}
+
+.mp-wrap .role-intro h1 {
+  color: #E01B2E;
+  font-size: 24px;
+}
+
+.mp-wrap .role-intro p {
+  color: var(--ink-muted);
+  font-size: 14.5px;
+}
+
+.mp-state {
+  display: none;
+}
+
+.mp-state.is-active {
+  display: block;
+}
+
+.mp-card {
+  background: var(--input-bg);
+  border: 1.5px solid rgba(224, 27, 46, 0.3);
+  border-radius: var(--radius-m);
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.mp-steps {
+  margin: 0 0 20px;
+  padding-left: 20px;
+  font-size: 14.5px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.mp-steps li {
+  margin-bottom: 8px;
+}
+
+.mp-pending-card {
+  text-align: center;
+  padding: 32px 22px;
+}
+
+.mp-pending-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bordeaux-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.mp-pending-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.mp-pending-text {
+  font-size: 14px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.mp-countdown-card {
+  text-align: center;
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  border: none;
+}
+
+.mp-countdown-label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mp-countdown-value {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mp-countdown-dates {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.mp-profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.mp-profile-row:last-child {
+  border-bottom: none;
+}
+
+.mp-profile-row-block {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mp-profile-label {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+.mp-profile-value {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: right;
+}
+
+.mp-profile-row-block .mp-profile-value {
+  text-align: left;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.mp-edit-btn {
+  width: 100%;
+}
+
+.mp-edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mp-edit-note {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin: 10px 0 0;
 }

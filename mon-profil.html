@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA — Mon profil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="mp-shell">
+    <div class="mp-wrap">
+
+      <!-- État 1 : envoyer la preuve de paiement -->
+      <section class="mp-state" id="stateProof">
+        <div class="role-intro">
+          <h1>Dernière étape</h1>
+          <p>Envoyez la capture d'écran de votre transaction pour activer votre abonnement.</p>
+        </div>
+
+        <div class="mp-card">
+          <ol class="mp-steps">
+            <li>Faites une capture d'écran de la confirmation de votre paiement.</li>
+            <li>Cliquez sur le bouton ci-dessous : votre application e-mail s'ouvre avec le destinataire et l'objet déjà remplis.</li>
+            <li>Joignez la capture d'écran, puis envoyez le message.</li>
+          </ol>
+          <button type="button" class="btn-pill-primary" id="sendProofBtn">
+            <span>Envoyer la preuve de paiement</span>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- État 2 : en attente de validation admin -->
+      <section class="mp-state" id="statePending">
+        <div class="role-intro">
+          <h1>Profil en cours de validation</h1>
+          <p>Votre preuve de paiement a été envoyée. Un administrateur va vérifier et publier votre profil.</p>
+        </div>
+        <div class="mp-card mp-pending-card">
+          <div class="mp-pending-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#E01B2E" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="#E01B2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="mp-pending-text">Cette étape peut prendre un peu de temps. Revenez plus tard sur cette page — elle se mettra à jour automatiquement une fois votre profil validé.</p>
+        </div>
+      </section>
+
+      <!-- État 3 : profil publié -->
+      <section class="mp-state" id="statePublished">
+        <div class="role-intro">
+          <h1>Mon profil</h1>
+          <p>Votre profil est visible par les clients de Worker TSA.</p>
+        </div>
+
+        <div class="mp-card mp-countdown-card">
+          <p class="mp-countdown-label">Abonnement</p>
+          <p class="mp-countdown-value" id="countdownValue">—</p>
+          <p class="mp-countdown-dates" id="countdownDates"></p>
+        </div>
+
+        <div class="mp-card mp-profile-card">
+          <div class="mp-profile-row">
+            <span class="mp-profile-label">Nom</span>
+            <span class="mp-profile-value" id="pvName">—</span>
+          </div>
+          <div class="mp-profile-row">
+            <span class="mp-profile-label">Domaine</span>
+            <span class="mp-profile-value" id="pvDomain">—</span>
+          </div>
+          <div class="mp-profile-row">
+            <span class="mp-profile-label">Localisation</span>
+            <span class="mp-profile-value" id="pvLocation">—</span>
+          </div>
+          <div class="mp-profile-row">
+            <span class="mp-profile-label">Téléphone</span>
+            <span class="mp-profile-value" id="pvPhone">—</span>
+          </div>
+          <div class="mp-profile-row">
+            <span class="mp-profile-label">WhatsApp</span>
+            <span class="mp-profile-value" id="pvWhatsapp">—</span>
+          </div>
+          <div class="mp-profile-row mp-profile-row-block">
+            <span class="mp-profile-label">Annonce</span>
+            <span class="mp-profile-value" id="pvAnnouncement">—</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-pill-secondary mp-edit-btn" id="editProfileBtn">
+          <span id="editProfileBtnText">Modifier mon profil</span>
+        </button>
+        <p class="mp-edit-note" id="editProfileNote"></p>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
