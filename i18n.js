@@ -108,6 +108,7 @@ const translations = {
   subPaymentTitle: { fr: 'Moyen de paiement', en: 'Payment method' },
   subPaymentPending: { fr: 'Les moyens de paiement seront disponibles très prochainement.', en: 'Payment methods will be available very soon.' },
   btnSubscribe: { fr: "S'abonner", en: 'Subscribe' },
+  selectPaymentFirst: { fr: 'Choisissez un moyen de paiement.', en: 'Choose a payment method.' },
 
   // --- Catégories de services (23 domaines) ---
   svcEngineering: { fr: 'Ingénierie & Architecture', en: 'Engineering & Architecture' },

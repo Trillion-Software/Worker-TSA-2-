@@ -349,8 +349,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const phoneField = document.getElementById('phoneField');
       const phoneInput = document.getElementById('phone');
       clearError(phoneField);
-      if (phoneInput.value.trim().length < 8) {
-        showError(phoneField, 'Entrez un numéro de téléphone valide.');
+      const phoneDigits = phoneInput.value.replace(/\D/g, '');
+      if (phoneDigits.length !== 8) {
+        showError(phoneField, 'Entrez un numéro à 8 chiffres.');
         valid = false;
       }
 
@@ -362,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await setDoc(doc(db, 'users', auth.currentUser.uid), {
             firstName: firstNameInput.value.trim(),
             lastName: lastNameInput.value.trim(),
-            phone: phoneInput.value.trim()
+            phone: '+228' + phoneDigits
             // La photo de profil n'est pas encore envoyée : Firebase Storage
             // n'est pas configuré. Pour l'instant, seul l'aperçu local fonctionne.
           }, { merge: true });
@@ -448,16 +449,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const callActionBtn = document.getElementById('callActionBtn');
     if (callActionBtn) {
       callActionBtn.addEventListener('click', () => {
-        const phone = document.getElementById('providerPhone').value.trim();
-        if (phone) window.location.href = 'tel:' + phone.replace(/\s+/g, '');
+        const digits = document.getElementById('providerPhone').value.replace(/\D/g, '');
+        if (digits) window.location.href = 'tel:+228' + digits;
       });
     }
 
     const whatsappActionBtn = document.getElementById('whatsappActionBtn');
     if (whatsappActionBtn) {
       whatsappActionBtn.addEventListener('click', () => {
-        const wa = document.getElementById('providerWhatsapp').value.trim();
-        if (wa) window.open('https://wa.me/' + wa.replace(/[^\d]/g, ''), '_blank');
+        const digits = document.getElementById('providerWhatsapp').value.replace(/\D/g, '');
+        if (digits) window.open('https://wa.me/228' + digits, '_blank');
       });
     }
 
@@ -471,8 +472,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ['providerLastNameField', 'providerLastName', v => v.trim().length >= 2, 'Entrez votre nom.'],
         ['providerRegionField', 'providerRegion', v => v.trim().length >= 2, 'Entrez votre région.'],
         ['providerCityField', 'providerCity', v => v.trim().length >= 2, 'Entrez votre ville.'],
-        ['providerPhoneField', 'providerPhone', v => v.trim().length >= 8, 'Entrez un numéro de téléphone valide.'],
-        ['providerWhatsappField', 'providerWhatsapp', v => v.trim().length >= 8, 'Entrez un numéro WhatsApp valide.']
+        ['providerPhoneField', 'providerPhone', v => v.replace(/\D/g, '').length === 8, 'Entrez un numéro à 8 chiffres.'],
+        ['providerWhatsappField', 'providerWhatsapp', v => v.replace(/\D/g, '').length === 8, 'Entrez un numéro à 8 chiffres.']
       ];
 
       const values = {};
@@ -499,8 +500,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lastName: values.providerLastName,
             region: values.providerRegion,
             city: values.providerCity,
-            phone: values.providerPhone,
-            whatsapp: values.providerWhatsapp,
+            phone: '+228' + values.providerPhone.replace(/\D/g, ''),
+            whatsapp: '+228' + values.providerWhatsapp.replace(/\D/g, ''),
             announcement: announcement
             // Photos (profil, portfolio, pièce d'identité/document) : aperçu local
             // uniquement pour l'instant, Firebase Storage n'est pas encore configuré.
@@ -517,20 +518,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Page abonnement ---
   const subPlans = document.getElementById('subPlans');
   const subContinue = document.getElementById('subContinue');
+  const paymentOptions = document.getElementById('paymentOptions');
   if (subPlans && subContinue) {
     let selectedPlan = null;
+    let selectedPayment = null;
+
+    function refreshContinueState() {
+      subContinue.disabled = !(selectedPlan && selectedPayment);
+    }
 
     subPlans.querySelectorAll('.sub-plan').forEach(plan => {
       plan.addEventListener('click', () => {
         subPlans.querySelectorAll('.sub-plan').forEach(p => p.classList.remove('is-selected'));
         plan.classList.add('is-selected');
         selectedPlan = { id: plan.dataset.plan, amount: plan.dataset.amount };
-        subContinue.disabled = false;
+        refreshContinueState();
       });
     });
 
+    if (paymentOptions) {
+      paymentOptions.querySelectorAll('.payment-option').forEach(option => {
+        option.addEventListener('click', () => {
+          paymentOptions.querySelectorAll('.payment-option').forEach(o => o.classList.remove('is-selected'));
+          option.classList.add('is-selected');
+          selectedPayment = option.dataset.method;
+          refreshContinueState();
+        });
+      });
+    }
+
     subContinue.addEventListener('click', async () => {
-      if (!selectedPlan) return;
+      if (!selectedPlan || !selectedPayment) return;
 
       if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
         const { db, doc, setDoc, auth } = window.wtsaFirebase;
@@ -538,16 +556,17 @@ document.addEventListener('DOMContentLoaded', () => {
           await setDoc(doc(db, 'users', auth.currentUser.uid), {
             subscriptionPlan: selectedPlan.id,
             subscriptionAmount: selectedPlan.amount,
+            subscriptionPaymentMethod: selectedPayment,
             subscriptionStatus: 'pending_payment'
-            // Le paiement réel sera branché une fois les moyens de paiement communiqués.
+            // Le paiement réel (envoi de la demande de paiement Tmoney/Flooz) sera branché
+            // une fois l'intégration technique de ces opérateurs confirmée.
           }, { merge: true });
         } catch (err) {
           console.error('Erreur lors de l\'enregistrement de l\'abonnement :', err);
         }
       }
 
-      // Paiement pas encore configuré — on informe l'utilisateur pour l'instant.
-      alert('Le paiement sera bientôt disponible. Votre choix a été enregistré.');
+      alert('Une demande de paiement va être envoyée sur votre numéro. (Intégration Tmoney/Flooz à finaliser.)');
     });
   }
 });

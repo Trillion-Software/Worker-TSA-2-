@@ -851,7 +851,7 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 44px 20px 0;
+  padding: 44px 20px 48px;
 }
 
 .dauth-pedestal-img {
@@ -1593,4 +1593,148 @@ button {
   color: var(--ink-muted);
   margin: 0;
   line-height: 1.5;
+}
+
+/* ==========================================================================
+   Champ téléphone avec indicatif +228 fixe
+   ========================================================================== */
+
+.phone-field {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  background: var(--input-bg);
+}
+
+.phone-prefix {
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink-muted);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  background: rgba(224, 27, 46, 0.06);
+}
+
+.phone-field input {
+  flex: 1;
+  height: 100%;
+  border: none !important;
+  background: transparent !important;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  padding: 0 14px;
+  box-shadow: none !important;
+}
+
+.phone-field .input-action-btn {
+  margin-right: 6px;
+}
+
+.provider-wrap .phone-field,
+#phoneField .phone-field {
+  border: 1.5px solid rgba(224, 27, 46, 0.35);
+}
+
+.provider-wrap .phone-prefix {
+  border-right-color: rgba(224, 27, 46, 0.25);
+}
+
+/* ==========================================================================
+   Moyens de paiement (page abonnement)
+   ========================================================================== */
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.payment-option:hover {
+  border-color: rgba(224, 27, 46, 0.5);
+}
+
+.payment-option.is-selected {
+  border-color: #E01B2E;
+  background: var(--bordeaux-soft);
+}
+
+.payment-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.payment-badge-tmoney {
+  background: #F7A400;
+}
+
+.payment-badge-flooz {
+  background: #0072CE;
+}
+
+.payment-option-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.payment-option-sub {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.payment-option-check {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(224, 27, 46, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.payment-option-check svg {
+  width: 11px;
+  height: 11px;
+}
+
+.payment-option.is-selected .payment-option-check {
+  opacity: 1;
+  transform: scale(1);
 }

@@ -89,8 +89,9 @@
         <!-- Coordonnées avec widgets cliquables -->
         <div class="field" id="providerPhoneField">
           <label for="providerPhone" data-i18n="providerPhone">Numéro de téléphone</label>
-          <div class="input-with-action">
-            <input type="tel" id="providerPhone" placeholder="+225 07 00 00 00 00" autocomplete="tel">
+          <div class="phone-field">
+            <span class="phone-prefix">+228</span>
+            <input type="tel" id="providerPhone" inputmode="numeric" maxlength="8" placeholder="90 00 00 00">
             <button type="button" class="input-action-btn input-action-call" id="callActionBtn" aria-label="Appeler">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v3a2 2 0 0 1-2 2C10.5 20 4 13.5 4 6a2 2 0 0 1 1-2z" fill="#fff"/></svg>
             </button>
@@ -100,8 +101,9 @@
 
         <div class="field" id="providerWhatsappField">
           <label for="providerWhatsapp" data-i18n="providerWhatsapp">Numéro WhatsApp</label>
-          <div class="input-with-action">
-            <input type="tel" id="providerWhatsapp" placeholder="+225 07 00 00 00 00" autocomplete="tel">
+          <div class="phone-field">
+            <span class="phone-prefix">+228</span>
+            <input type="tel" id="providerWhatsapp" inputmode="numeric" maxlength="8" placeholder="90 00 00 00">
             <button type="button" class="input-action-btn input-action-whatsapp" id="whatsappActionBtn" aria-label="WhatsApp">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2z" fill="#fff"/><path d="M8.7 7.6c.2-.5.6-.5 1-.5h.5c.2 0 .4 0 .6.4l.8 1.7c.1.2.1.4 0 .6l-.6.8c-.1.2-.1.3 0 .5.5 1 1.5 2 2.5 2.5.2.1.3.1.5 0l.8-.6c.2-.1.4-.1.6 0l1.7.8c.3.2.4.4.4.6v.5c0 .4 0 .8-.5 1-.5.2-2 .6-3.6-.4-1.8-1.1-3.5-2.8-4.6-4.6-1-1.6-.6-3.1-.4-3.6z" fill="#25D366"/></svg>
             </button>

@@ -47,7 +47,22 @@
 
       <div class="sub-payment">
         <p class="provider-section-label" data-i18n="subPaymentTitle">Moyen de paiement</p>
-        <p class="sub-payment-pending" data-i18n="subPaymentPending">Les moyens de paiement seront disponibles très prochainement.</p>
+        <div class="payment-options" id="paymentOptions">
+          <button type="button" class="payment-option" data-method="tmoney">
+            <span class="payment-badge payment-badge-tmoney">T</span>
+            <span class="payment-option-name">Tmoney</span>
+            <span class="payment-option-check">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#7A1027" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+          <button type="button" class="payment-option" data-method="flooz">
+            <span class="payment-badge payment-badge-flooz">F</span>
+            <span class="payment-option-name">Flooz <span class="payment-option-sub">(Moov Money)</span></span>
+            <span class="payment-option-check">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="#7A1027" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+        </div>
       </div>
 
       <button type="button" class="btn-pill-primary" id="subContinue" disabled>

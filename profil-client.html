@@ -50,7 +50,10 @@
 
         <div class="field" id="phoneField">
           <label for="phone" data-i18n="labelPhone">Numéro de téléphone</label>
-          <input type="tel" id="phone" name="phone" placeholder="+225 07 00 00 00 00" data-i18n-placeholder="placeholderPhone" autocomplete="tel">
+          <div class="phone-field">
+            <span class="phone-prefix">+228</span>
+            <input type="tel" id="phone" name="phone" inputmode="numeric" maxlength="8" placeholder="90 00 00 00" autocomplete="tel-national">
+          </div>
           <span class="field-error"></span>
         </div>
 
