@@ -15,7 +15,11 @@ import {
   getFirestore,
   doc,
   setDoc,
-  getDoc
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -34,6 +38,8 @@ const db = getFirestore(app);
 
 // Exposés globalement pour que script.js (script classique, non-module)
 // puisse les utiliser sans avoir à convertir tout le projet en modules.
+window.WTSA_ADMIN_EMAIL = 'trillionbooks6@gmail.com';
+
 window.wtsaFirebase = {
   auth,
   db,
@@ -43,7 +49,11 @@ window.wtsaFirebase = {
   onAuthStateChanged,
   doc,
   setDoc,
-  getDoc
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs
 };
 
 // Signale à script.js que Firebase est prêt (utile car les modules

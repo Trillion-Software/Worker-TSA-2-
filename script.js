@@ -120,6 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         const credential = await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+
+        if (credential.user.email === window.WTSA_ADMIN_EMAIL) {
+          window.location.href = 'console-admin.html';
+          return;
+        }
+
         const userSnap = await getDoc(doc(db, 'users', credential.user.uid));
         if (userSnap.exists() && userSnap.data().role) {
           window.location.href = 'services.html';
@@ -577,13 +583,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Flooz : déclenche la syntaxe USSD via le composeur téléphonique,
+      // Déclenche la syntaxe USSD (Tmoney ou Flooz) via le composeur téléphonique,
       // sans jamais afficher le code brut dans l'interface du site.
-      if (selectedPayment === 'flooz') {
-        const ussdCode = '*155*2*2*122080*122080*' + selectedPlan.amount + '#';
-        window.location.href = 'tel:' + ussdCode;
-        setTimeout(() => { window.location.href = 'mon-profil.html'; }, 600);
-        return;
+      // Les syntaxes sont stockées dans Firestore (settings/paymentUssd) et modifiables
+      // depuis la console admin, sans avoir à toucher au code.
+      if (window.wtsaFirebase) {
+        try {
+          const { db, doc, getDoc } = window.wtsaFirebase;
+          const settingsSnap = await getDoc(doc(db, 'settings', 'paymentUssd'));
+          const settings = settingsSnap.exists() ? settingsSnap.data() : {};
+          const template = selectedPayment === 'flooz'
+            ? (settings.floozTemplate || '*155*2*2*122080*122080*{montant}#')
+            : (settings.tmoneyTemplate || '');
+
+          if (template) {
+            const ussdCode = template.replace('{montant}', selectedPlan.amount);
+            window.location.href = 'tel:' + ussdCode;
+            setTimeout(() => { window.location.href = 'mon-profil.html'; }, 600);
+            return;
+          }
+        } catch (err) {
+          console.error('Erreur lors de la récupération de la syntaxe USSD :', err);
+        }
       }
 
       window.location.href = 'mon-profil.html';
@@ -683,6 +704,112 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       renderProfile(user.uid);
+    });
+  }
+
+  // --- Console admin ---
+  const caShell = document.querySelector('.ca-shell');
+  if (caShell && window.wtsaFirebase) {
+    const { auth, db, doc, setDoc, getDoc, collection, query, where, getDocs, onAuthStateChanged } = window.wtsaFirebase;
+
+    async function loadProviderCount() {
+      const countEl = document.getElementById('providerCount');
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'prestataire')));
+        countEl.textContent = snap.size;
+      } catch (err) {
+        console.error('Erreur lors du comptage des prestataires :', err);
+        countEl.textContent = '—';
+      }
+    }
+
+    async function loadPendingList() {
+      const listEl = document.getElementById('pendingList');
+      const emptyEl = document.getElementById('pendingEmpty');
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), where('profileStatus', '==', 'pending_review')));
+        if (snap.empty) {
+          emptyEl.textContent = 'Aucune demande en attente pour le moment.';
+          return;
+        }
+        emptyEl.remove();
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement('div');
+          card.className = 'ca-pending-card';
+          card.innerHTML = `
+            <p class="ca-pending-name">${[data.firstName, data.lastName].filter(Boolean).join(' ') || 'Sans nom'}</p>
+            <p class="ca-pending-detail">Domaine : ${data.domain || '—'}</p>
+            <p class="ca-pending-detail">Lieu : ${[data.city, data.region].filter(Boolean).join(', ') || '—'}</p>
+            <p class="ca-pending-detail">Téléphone : ${data.phone || '—'}</p>
+            <p class="ca-pending-detail">E-mail : ${data.email || '—'}</p>
+            <button type="button" class="ca-pending-approve">Approuver et publier</button>
+          `;
+          card.querySelector('.ca-pending-approve').addEventListener('click', async (event) => {
+            event.target.disabled = true;
+            event.target.textContent = 'Publication...';
+            try {
+              await setDoc(doc(db, 'users', docSnap.id), { profileStatus: 'published' }, { merge: true });
+              card.remove();
+              if (!listEl.querySelector('.ca-pending-card')) {
+                listEl.innerHTML = '<p class="ca-empty">Aucune demande en attente pour le moment.</p>';
+              }
+            } catch (err) {
+              console.error('Erreur lors de la publication :', err);
+              event.target.disabled = false;
+              event.target.textContent = 'Approuver et publier';
+            }
+          });
+          listEl.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Erreur lors du chargement des demandes :', err);
+        emptyEl.textContent = 'Erreur lors du chargement.';
+      }
+    }
+
+    async function loadUssdSettings() {
+      try {
+        const snap = await getDoc(doc(db, 'settings', 'paymentUssd'));
+        if (snap.exists()) {
+          const data = snap.data();
+          document.getElementById('tmoneyUssd').value = data.tmoneyTemplate || '';
+          document.getElementById('floozUssd').value = data.floozTemplate || '*155*2*2*122080*122080*{montant}#';
+        } else {
+          document.getElementById('floozUssd').value = '*155*2*2*122080*122080*{montant}#';
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement des syntaxes USSD :', err);
+      }
+    }
+
+    const ussdForm = document.getElementById('ussdForm');
+    if (ussdForm) {
+      ussdForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const note = document.getElementById('ussdSaveNote');
+        try {
+          await setDoc(doc(db, 'settings', 'paymentUssd'), {
+            tmoneyTemplate: document.getElementById('tmoneyUssd').value.trim(),
+            floozTemplate: document.getElementById('floozUssd').value.trim()
+          }, { merge: true });
+          note.textContent = 'Syntaxes enregistrées.';
+          setTimeout(() => { note.textContent = ''; }, 3000);
+        } catch (err) {
+          console.error('Erreur lors de l\'enregistrement des syntaxes USSD :', err);
+          note.textContent = 'Erreur lors de l\'enregistrement.';
+        }
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== window.WTSA_ADMIN_EMAIL) {
+        window.location.href = 'connexion.html';
+        return;
+      }
+      loadProviderCount();
+      loadPendingList();
+      loadUssdSettings();
     });
   }
 });

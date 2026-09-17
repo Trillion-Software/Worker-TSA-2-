@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker TSA — Console admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="ca-shell">
+    <div class="ca-wrap">
+
+      <div class="role-intro ca-intro">
+        <h1>Console de contrôle</h1>
+        <p>Réservée à l'administrateur de Worker TSA.</p>
+      </div>
+
+      <!-- Nombre de prestataires -->
+      <div class="ca-stat-card">
+        <span class="ca-stat-label">Prestataires actifs sur l'application</span>
+        <span class="ca-stat-value" id="providerCount">—</span>
+      </div>
+
+      <!-- Demandes de validation -->
+      <section class="ca-section">
+        <h2 class="ca-section-title">Demandes de validation</h2>
+        <div id="pendingList" class="ca-pending-list">
+          <p class="ca-empty" id="pendingEmpty">Chargement...</p>
+        </div>
+      </section>
+
+      <!-- Syntaxes USSD -->
+      <section class="ca-section">
+        <h2 class="ca-section-title">Syntaxes USSD des paiements</h2>
+        <p class="ca-section-hint">Utilisez <code>{montant}</code> à l'endroit où le montant de l'abonnement doit être inséré.</p>
+
+        <form id="ussdForm">
+          <div class="field">
+            <label for="tmoneyUssd">Syntaxe Tmoney</label>
+            <input type="text" id="tmoneyUssd" placeholder="Ex : *145*2*1*122080*{montant}#">
+          </div>
+
+          <div class="field">
+            <label for="floozUssd">Syntaxe Flooz</label>
+            <input type="text" id="floozUssd" placeholder="Ex : *155*2*2*122080*122080*{montant}#">
+          </div>
+
+          <button type="submit" class="btn-pill-primary">
+            <span>Enregistrer les syntaxes</span>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p class="ca-save-note" id="ussdSaveNote"></p>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

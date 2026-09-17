@@ -1912,3 +1912,145 @@ button {
   color: var(--ink-muted);
   margin: 10px 0 0;
 }
+
+/* ==========================================================================
+   Console admin
+   ========================================================================== */
+
+.ca-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 64px;
+  background: var(--white);
+}
+
+.ca-wrap {
+  width: 100%;
+  max-width: 520px;
+}
+
+.ca-intro h1 {
+  color: #E01B2E;
+  font-size: 26px;
+}
+
+.ca-intro p {
+  color: var(--ink-muted);
+  font-size: 14.5px;
+}
+
+.ca-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  border-radius: var(--radius-m);
+  padding: 20px 22px;
+  margin-bottom: 32px;
+}
+
+.ca-stat-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ca-stat-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ca-section {
+  margin-bottom: 36px;
+}
+
+.ca-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+
+.ca-section-hint {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin: -6px 0 14px;
+  line-height: 1.5;
+}
+
+.ca-section-hint code {
+  background: var(--input-bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: #B01524;
+}
+
+.ca-pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ca-empty {
+  font-size: 14px;
+  color: var(--ink-muted);
+  text-align: center;
+  padding: 16px 0;
+}
+
+.ca-pending-card {
+  background: var(--input-bg);
+  border: 1.5px solid rgba(224, 27, 46, 0.3);
+  border-radius: var(--radius-m);
+  padding: 16px 18px;
+}
+
+.ca-pending-name {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.ca-pending-detail {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  margin: 0 0 2px;
+}
+
+.ca-pending-approve {
+  margin-top: 12px;
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-s);
+  background: linear-gradient(135deg, #F0202F 0%, #8C0F1E 100%);
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ca-pending-approve:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#ussdForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ca-save-note {
+  text-align: center;
+  font-size: 13px;
+  color: #1E8E3E;
+  margin: 0;
+  min-height: 16px;
+}
