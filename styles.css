@@ -847,11 +847,50 @@ button {
 .dauth-shell {
   position: relative;
   min-height: 100vh;
-  background: var(--white);
+  background: linear-gradient(180deg, #E7E9ED 0%, #CDD2DB 45%, #AEB4C2 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 44px 20px 48px;
+  overflow: hidden;
+}
+
+.dauth-shell::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -20%;
+  width: 55%;
+  height: 70%;
+  background: linear-gradient(100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.55) 42%,
+    rgba(255, 255, 255, 0.75) 48%,
+    transparent 62%
+  );
+  transform: rotate(-6deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dauth-shell::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 42%;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.18) 0px,
+      rgba(255, 255, 255, 0.18) 1px,
+      transparent 1px,
+      transparent 7px
+    ),
+    linear-gradient(180deg, rgba(174, 180, 194, 0.4) 0%, rgba(140, 147, 163, 0.55) 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .dauth-pedestal-img {
