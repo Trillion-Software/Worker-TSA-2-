@@ -8,6 +8,10 @@
 </head>
 <body>
 
+  <button type="button" class="back-btn" onclick="history.back()" aria-label="Retour">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5l-7 7 7 7" stroke="#7A1027" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
   <main class="ca-shell">
     <div class="ca-wrap">
 
@@ -20,6 +24,12 @@
       <div class="ca-stat-card">
         <span class="ca-stat-label">Prestataires actifs sur l'application</span>
         <span class="ca-stat-value" id="providerCount">—</span>
+      </div>
+
+      <!-- Nombre de clients -->
+      <div class="ca-stat-card ca-stat-card-client">
+        <span class="ca-stat-label">Clients inscrits sur l'application</span>
+        <span class="ca-stat-value" id="clientCount">—</span>
       </div>
 
       <!-- Demandes de validation -->

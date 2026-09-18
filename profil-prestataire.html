@@ -8,6 +8,10 @@
 </head>
 <body>
 
+  <button type="button" class="back-btn" onclick="history.back()" aria-label="Retour">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5l-7 7 7 7" stroke="#7A1027" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
   <main class="provider-shell">
     <div class="provider-wrap">
 
@@ -149,10 +153,16 @@
           <input type="file" id="docInput" accept="image/*" hidden>
         </div>
 
+        <!-- Description -->
+        <div class="field">
+          <label for="providerDescription" data-i18n="providerDescriptionLabel">Description</label>
+          <textarea id="providerDescription" rows="4" placeholder="Présentez votre activité, votre expérience, vos services..." data-i18n-placeholder="providerDescriptionPlaceholder"></textarea>
+        </div>
+
         <!-- Annonce -->
         <div class="field">
-          <label for="providerAnnouncement" data-i18n="providerAnnouncementLabel">Information importante / annonce</label>
-          <textarea id="providerAnnouncement" rows="4" placeholder="Décrivez votre activité, vos disponibilités, une annonce importante..." data-i18n-placeholder="providerAnnouncementPlaceholder"></textarea>
+          <label for="providerAnnouncement" data-i18n="providerAnnouncementLabel">Annonce</label>
+          <textarea id="providerAnnouncement" rows="3" placeholder="Une information ponctuelle à mettre en avant..." data-i18n-placeholder="providerAnnouncementPlaceholder"></textarea>
         </div>
 
         <button type="submit" class="btn-pill-primary">

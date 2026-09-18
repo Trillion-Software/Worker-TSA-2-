@@ -305,6 +305,15 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = 'profil-prestataire.html';
         });
       }
+    } else {
+      // Mode client : cliquer sur une catégorie ouvre la liste des prestataires de ce domaine.
+      servicesGrid.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const domain = card.querySelector('.service-name').textContent.trim();
+          localStorage.setItem('wtsaBrowseDomain', domain);
+          window.location.href = 'liste-prestataires.html';
+        });
+      });
     }
   }
 
@@ -496,6 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!valid) return;
 
+      const description = document.getElementById('providerDescription').value.trim();
       const announcement = document.getElementById('providerAnnouncement').value.trim();
       let alreadyPublished = false;
 
@@ -513,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
             city: values.providerCity,
             phone: '+228' + values.providerPhone.replace(/\D/g, ''),
             whatsapp: '+228' + values.providerWhatsapp.replace(/\D/g, ''),
+            description: description,
             announcement: announcement,
             lastProfileEditAt: new Date().toISOString()
             // Photos (profil, portfolio, pièce d'identité/document) : aperçu local
@@ -641,6 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('pvLocation').textContent = [data.city, data.region].filter(Boolean).join(', ') || '—';
         document.getElementById('pvPhone').textContent = data.phone || '—';
         document.getElementById('pvWhatsapp').textContent = data.whatsapp || '—';
+        document.getElementById('pvDescription').textContent = data.description || '—';
         document.getElementById('pvAnnouncement').textContent = data.announcement || '—';
 
         const countdownValue = document.getElementById('countdownValue');
@@ -719,6 +731,17 @@ document.addEventListener('DOMContentLoaded', () => {
         countEl.textContent = snap.size;
       } catch (err) {
         console.error('Erreur lors du comptage des prestataires :', err);
+        countEl.textContent = '—';
+      }
+    }
+
+    async function loadClientCount() {
+      const countEl = document.getElementById('clientCount');
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'client')));
+        countEl.textContent = snap.size;
+      } catch (err) {
+        console.error('Erreur lors du comptage des clients :', err);
         countEl.textContent = '—';
       }
     }
@@ -808,8 +831,69 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       loadProviderCount();
+      loadClientCount();
       loadPendingList();
       loadUssdSettings();
     });
+  }
+
+  // --- Page liste des prestataires par domaine (vue client) ---
+  const lpList = document.getElementById('lpList');
+  if (lpList && window.wtsaFirebase) {
+    const { db, collection, query, where, getDocs } = window.wtsaFirebase;
+    const domain = localStorage.getItem('wtsaBrowseDomain') || '';
+    const titleEl = document.getElementById('lpDomainTitle');
+    if (titleEl && domain) titleEl.textContent = domain;
+
+    (async () => {
+      const emptyEl = document.getElementById('lpEmpty');
+      try {
+        const snap = await getDocs(query(
+          collection(db, 'users'),
+          where('role', '==', 'prestataire'),
+          where('profileStatus', '==', 'published'),
+          where('domain', '==', domain)
+        ));
+
+        if (snap.empty) {
+          emptyEl.textContent = 'Aucun prestataire disponible dans ce domaine pour le moment.';
+          return;
+        }
+
+        emptyEl.remove();
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement('div');
+          card.className = 'lp-card';
+          card.innerHTML = `
+            <p class="lp-card-name">${[data.firstName, data.lastName].filter(Boolean).join(' ') || 'Prestataire'}</p>
+            <p class="lp-card-location">${[data.city, data.region].filter(Boolean).join(', ') || ''}</p>
+            ${data.announcement ? `<p class="lp-card-announcement">${data.announcement}</p>` : ''}
+            <div class="lp-card-actions">
+              <button type="button" class="lp-card-action lp-action-call" data-phone="${data.phone || ''}">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v3a2 2 0 0 1-2 2C10.5 20 4 13.5 4 6a2 2 0 0 1 1-2z" fill="#fff"/></svg>
+                Appeler
+              </button>
+              <button type="button" class="lp-card-action lp-action-whatsapp" data-whatsapp="${data.whatsapp || ''}">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2z" fill="#fff"/></svg>
+                WhatsApp
+              </button>
+            </div>
+          `;
+          card.querySelector('.lp-action-call').addEventListener('click', (e) => {
+            const phone = e.currentTarget.dataset.phone;
+            if (phone) window.location.href = 'tel:' + phone;
+          });
+          card.querySelector('.lp-action-whatsapp').addEventListener('click', (e) => {
+            const wa = e.currentTarget.dataset.whatsapp;
+            if (wa) window.open('https://wa.me/' + wa.replace(/\D/g, ''), '_blank');
+          });
+          lpList.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Erreur lors du chargement des prestataires :', err);
+        emptyEl.textContent = 'Erreur lors du chargement. Réessayez.';
+      }
+    })();
   }
 });

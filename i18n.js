@@ -91,8 +91,10 @@ const translations = {
   providerDocFront: { fr: 'Recto', en: 'Front' },
   providerDocBack: { fr: 'Verso', en: 'Back' },
   providerDocBizHint: { fr: "Registre de commerce, agrément ou tout document prouvant l'existence de votre entreprise.", en: 'Business registration or any document proving your business exists.' },
-  providerAnnouncementLabel: { fr: 'Information importante / annonce', en: 'Important information / announcement' },
-  providerAnnouncementPlaceholder: { fr: 'Décrivez votre activité, vos disponibilités, une annonce importante...', en: 'Describe your activity, availability, an important announcement...' },
+  providerDescriptionLabel: { fr: 'Description', en: 'Description' },
+  providerDescriptionPlaceholder: { fr: 'Présentez votre activité, votre expérience, vos services...', en: 'Present your activity, experience, services...' },
+  providerAnnouncementLabel: { fr: 'Annonce', en: 'Announcement' },
+  providerAnnouncementPlaceholder: { fr: 'Une information ponctuelle à mettre en avant...', en: 'A one-off update you want to highlight...' },
   btnSaveContinue: { fr: 'Enregistrer et continuer', en: 'Save and continue' },
 
   // --- Page abonnement ---
