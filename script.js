@@ -83,6 +83,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Mot de passe oublié : envoie une requête par e-mail à l'admin ---
+  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+  if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      const emailInput = document.getElementById('loginEmail');
+      const userEmail = emailInput && emailInput.value.trim() ? emailInput.value.trim() : 'non renseigné';
+      const subject = encodeURIComponent('Mot de passe oublié — Worker TSA');
+      const body = encodeURIComponent(`Bonjour,\n\nJ'ai oublié ou perdu mon mot de passe Worker TSA.\nMon adresse e-mail de compte : ${userEmail}\n\nMerci de m'aider à le réinitialiser.`);
+      window.location.href = `mailto:workertsa001@protonmail.com?subject=${subject}&body=${body}`;
+    });
+  }
+
   // --- Formulaire de connexion ---
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
@@ -268,6 +281,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const isProviderMode = userRole === 'prestataire';
     const continueWrap = document.getElementById('servicesContinueWrap');
     const continueBtn = document.getElementById('servicesContinue');
+
+    // Filtre de recherche en direct (insensible aux accents et à la casse).
+    const servicesSearchInput = document.querySelector('.services-search input');
+    if (servicesSearchInput) {
+      const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      servicesSearchInput.addEventListener('input', () => {
+        const term = normalize(servicesSearchInput.value);
+        servicesGrid.querySelectorAll('.service-card').forEach(card => {
+          const name = normalize(card.querySelector('.service-name').textContent);
+          card.style.display = name.includes(term) ? '' : 'none';
+        });
+      });
+    }
 
     if (isProviderMode) {
       const headingEl = document.querySelector('[data-i18n="servicesHeadline"]');
@@ -668,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const editBtn = document.getElementById('editProfileBtn');
         const editNote = document.getElementById('editProfileNote');
         const lastEdit = data.lastProfileEditAt ? new Date(data.lastProfileEditAt) : null;
-        const nextEditDate = lastEdit ? new Date(lastEdit.getTime() + 14 * 24 * 60 * 60 * 1000) : null;
+        const nextEditDate = lastEdit ? new Date(lastEdit.getTime() + 3 * 24 * 60 * 60 * 1000) : null;
 
         if (nextEditDate && nextEditDate > new Date()) {
           editBtn.disabled = true;
@@ -791,6 +817,47 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    function formatCaDate(d) {
+      return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    async function loadSubscriptions() {
+      const listEl = document.getElementById('subsList');
+      const emptyEl = document.getElementById('subsEmpty');
+      if (!listEl) return;
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'prestataire')));
+        if (snap.empty) {
+          emptyEl.textContent = 'Aucun prestataire pour le moment.';
+          return;
+        }
+        emptyEl.remove();
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement('div');
+          card.className = 'ca-pending-card';
+          let countdownText = 'Aucun abonnement enregistré.';
+          if (data.subscriptionEndDate) {
+            const end = new Date(data.subscriptionEndDate);
+            const daysLeft = Math.ceil((end - new Date()) / (24 * 60 * 60 * 1000));
+            countdownText = daysLeft > 0
+              ? `${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''} (jusqu'au ${formatCaDate(end)})`
+              : `Abonnement expiré depuis le ${formatCaDate(end)}`;
+          }
+          card.innerHTML = `
+            <p class="ca-pending-name">${[data.firstName, data.lastName].filter(Boolean).join(' ') || 'Sans nom'}</p>
+            <p class="ca-pending-detail">Domaine : ${data.domain || '—'}</p>
+            <p class="ca-pending-detail">Statut abonnement : ${data.subscriptionStatus || '—'}</p>
+            <p class="ca-pending-detail">Compte à rebours : ${countdownText}</p>
+          `;
+          listEl.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Erreur lors du chargement des abonnements :', err);
+        emptyEl.textContent = 'Erreur lors du chargement.';
+      }
+    }
+
     async function loadUssdSettings() {
       try {
         const snap = await getDoc(doc(db, 'settings', 'paymentUssd'));
@@ -833,6 +900,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadProviderCount();
       loadClientCount();
       loadPendingList();
+      loadSubscriptions();
       loadUssdSettings();
     });
   }

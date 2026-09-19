@@ -847,12 +847,29 @@ button {
 .dauth-shell {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(180deg, #E7E9ED 0%, #CDD2DB 45%, #AEB4C2 100%);
+  background: url('splash-bg.jpg') center / cover no-repeat, linear-gradient(180deg, #E7E9ED 0%, #CDD2DB 45%, #AEB4C2 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 44px 20px 48px;
   overflow: hidden;
+}
+
+.dauth-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  padding: 22px 18px 24px;
+  box-shadow: 0 18px 40px rgba(20, 26, 40, 0.18);
+  backdrop-filter: blur(2px);
+}
+
+.dauth-footer-brand {
+  position: relative;
+  z-index: 2;
+  margin-top: 22px;
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  text-align: center;
 }
 
 .dauth-shell::before {
