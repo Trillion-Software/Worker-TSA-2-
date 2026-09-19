@@ -93,8 +93,13 @@ const translations = {
   providerDocBizHint: { fr: "Registre de commerce, agrément ou tout document prouvant l'existence de votre entreprise.", en: 'Business registration or any document proving your business exists.' },
   providerDescriptionLabel: { fr: 'Description', en: 'Description' },
   providerDescriptionPlaceholder: { fr: 'Présentez votre activité, votre expérience, vos services...', en: 'Present your activity, experience, services...' },
-  providerAnnouncementLabel: { fr: 'Annonce', en: 'Announcement' },
-  providerAnnouncementPlaceholder: { fr: 'Une information ponctuelle à mettre en avant...', en: 'A one-off update you want to highlight...' },
+  providerAnnouncementLabel: { fr: 'Information importante', en: 'Important information' },
+  providerAnnouncementPlaceholder: { fr: 'Horaires, conditions, délais ou tout ce que le client doit savoir...', en: 'Hours, conditions, lead times or anything the client should know...' },
+  providerGenderLabel: { fr: 'Vous êtes', en: 'You are' },
+  genderMale: { fr: 'Homme', en: 'Man' },
+  genderFemale: { fr: 'Femme', en: 'Woman' },
+  genderRequired: { fr: 'Choisissez Homme ou Femme.', en: 'Please choose Man or Woman.' },
+  providerEmail: { fr: 'E-mail', en: 'Email' },
   btnSaveContinue: { fr: 'Enregistrer et continuer', en: 'Save and continue' },
 
   // --- Page abonnement ---
@@ -159,7 +164,39 @@ const translations = {
   svcTransit: { fr: 'Transit', en: 'Transit' },
   svcSecurity: { fr: 'Sécurité privée', en: 'Private security' },
   svcGuarding: { fr: 'Gardiennage', en: 'Guarding' },
-  svcSalesAgent: { fr: 'Agent Commercial', en: 'Sales agent' }
+  svcSalesAgent: { fr: 'Agent Commercial', en: 'Sales agent' },
+
+  // --- Barre d'options (profil / favoris / support) sur la page des services ---
+  dockProfileLabel: { fr: 'Profil', en: 'Profile' },
+  dockFavoritesLabel: { fr: 'Favoris', en: 'Favorites' },
+  dockSupportLabel: { fr: 'Support', en: 'Support' },
+
+  profileWidgetTitle: { fr: 'Mon profil', en: 'My profile' },
+  profileWidgetNextEdit: { fr: 'Prochaine modification possible le', en: 'Next edit available on' },
+  profileWidgetSave: { fr: 'Enregistrer', en: 'Save' },
+  profileWidgetSaved: { fr: 'Profil mis à jour.', en: 'Profile updated.' },
+  profileWidgetError: { fr: 'Une erreur est survenue. Réessayez.', en: 'Something went wrong. Please try again.' },
+  profileWidgetLoggedOut: { fr: 'Connectez-vous pour modifier votre profil.', en: 'Log in to edit your profile.' },
+  accountEmailLabel: { fr: 'E-mail', en: 'Email' },
+  accountPasswordLabel: { fr: 'Mot de passe', en: 'Password' },
+  accountPasswordNote: { fr: 'Pour votre sécurité, votre mot de passe ne peut pas être affiché.', en: 'For your security, your password cannot be displayed.' },
+  deleteAccountBtn: { fr: 'Supprimer mon compte définitivement', en: 'Delete my account permanently' },
+  deleteAccountWarn: { fr: 'Cette action est irréversible. Entrez votre mot de passe pour confirmer.', en: 'This cannot be undone. Enter your password to confirm.' },
+  deleteAccountPwPlaceholder: { fr: 'Votre mot de passe', en: 'Your password' },
+  deleteAccountConfirmBtn: { fr: 'Confirmer la suppression', en: 'Confirm deletion' },
+  deleteAccountCancel: { fr: 'Annuler', en: 'Cancel' },
+  deleteAccountNeedPw: { fr: 'Entrez votre mot de passe.', en: 'Enter your password.' },
+  deleteAccountWrongPw: { fr: 'Mot de passe incorrect.', en: 'Incorrect password.' },
+  deleteAccountError: { fr: 'Impossible de supprimer le compte. Réessayez.', en: 'Could not delete the account. Please try again.' },
+
+  favoritesWidgetTitle: { fr: 'Mes favoris', en: 'My favorites' },
+  favoritesWidgetHint: { fr: "Touchez l'étoile sur une catégorie pour l'ajouter à vos favoris.", en: 'Tap the star on a category to add it to your favorites.' },
+  favoritesWidgetEmpty: { fr: 'Aucun favori pour le moment.', en: 'No favorites yet.' },
+
+  supportWidgetTitle: { fr: 'Contacter le support', en: 'Contact support' },
+  supportWidgetSubtext: { fr: 'Décrivez votre problème, un e-mail sera préparé à destination de notre équipe.', en: "Describe your issue and we'll prepare an email to our team." },
+  supportWidgetPlaceholder: { fr: 'Votre message...', en: 'Your message...' },
+  supportWidgetSend: { fr: 'Envoyer par e-mail', en: 'Send by email' }
 };
 
 function wtsaGetLang() {

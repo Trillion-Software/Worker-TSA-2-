@@ -12,6 +12,8 @@
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5l-7 7 7 7" stroke="#7A1027" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
 
+  <div class="cover-banner"><img src="cover.jpg" alt="" onerror="this.remove()"></div>
+
   <main class="provider-shell">
     <div class="provider-wrap">
 
@@ -22,44 +24,20 @@
 
       <form id="providerProfileForm" novalidate>
 
-        <!-- Photo de profil -->
-        <div class="avatar-picker">
-          <button type="button" class="avatar-circle" id="avatarCircle">
-            <img id="avatarPreview" alt="" hidden>
-            <svg class="avatar-placeholder" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M5 19c0-3.3 3.1-5.4 7-5.4s7 2.1 7 5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-            <span class="avatar-camera">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 8h3l1.2-2h7.6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
-                <circle cx="12" cy="13.5" r="3.2" stroke="#fff" stroke-width="1.5"/>
-              </svg>
-            </span>
-          </button>
-          <input type="file" id="avatarInput" accept="image/*" hidden>
-          <p class="avatar-hint" data-i18n="profilePhotoHint">Ajouter une photo de profil</p>
-        </div>
-
-        <!-- 3 photos du domaine -->
+        <!-- Genre : widget Homme / Femme (pas de photo personnelle) -->
         <div class="provider-section">
-          <label class="provider-section-label" data-i18n="providerPortfolioLabel">Photos de votre domaine (3)</label>
-          <p class="provider-section-hint" data-i18n="providerPortfolioHint">Montrez des exemples de vos réalisations.</p>
-          <div class="portfolio-grid">
-            <button type="button" class="portfolio-slot" data-slot="0">
-              <img alt="" hidden>
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <label class="provider-section-label" data-i18n="providerGenderLabel">Vous êtes</label>
+          <div class="gender-grid">
+            <button type="button" class="gender-card" data-gender="homme" aria-pressed="false">
+              <span class="gender-avatar"><svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="32" cy="23" r="10"/><path d="M11 58c0-12 9-19 21-19s21 7 21 19z"/></svg></span>
+              <span class="gender-name" data-i18n="genderMale">Homme</span>
             </button>
-            <button type="button" class="portfolio-slot" data-slot="1">
-              <img alt="" hidden>
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-            <button type="button" class="portfolio-slot" data-slot="2">
-              <img alt="" hidden>
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <button type="button" class="gender-card" data-gender="femme" aria-pressed="false">
+              <span class="gender-avatar"><svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path opacity=".55" d="M19 27c0-10 5-18 13-18s13 8 13 18v15c0 2-2 3-4 2l-2-1V33H25v11l-2 1c-2 1-4 0-4-2z"/><circle cx="32" cy="24" r="9.5"/><path d="M11 58c0-12 9-19 21-19s21 7 21 19z"/></svg></span>
+              <span class="gender-name" data-i18n="genderFemale">Femme</span>
             </button>
           </div>
-          <input type="file" id="portfolioInput" accept="image/*" hidden>
+          <span class="field-error" id="genderError"></span>
         </div>
 
         <!-- Identité -->
@@ -72,20 +50,6 @@
           <div class="field" id="providerLastNameField">
             <label for="providerLastName" data-i18n="providerLastName">Nom</label>
             <input type="text" id="providerLastName" autocomplete="family-name">
-            <span class="field-error"></span>
-          </div>
-        </div>
-
-        <!-- Lieu -->
-        <div class="provider-row">
-          <div class="field" id="providerRegionField">
-            <label for="providerRegion" data-i18n="providerRegion">Région</label>
-            <input type="text" id="providerRegion" autocomplete="address-level1">
-            <span class="field-error"></span>
-          </div>
-          <div class="field" id="providerCityField">
-            <label for="providerCity" data-i18n="providerCity">Ville</label>
-            <input type="text" id="providerCity" autocomplete="address-level2">
             <span class="field-error"></span>
           </div>
         </div>
@@ -115,42 +79,10 @@
           <span class="field-error"></span>
         </div>
 
-        <!-- Pièce d'identité OU document d'entreprise -->
-        <div class="provider-section">
-          <label class="provider-section-label" data-i18n="providerDocTitle">Justificatif</label>
-
-          <div class="auth-tabs doc-tabs">
-            <button type="button" class="auth-tab is-active" data-doctab="id" data-i18n="providerDocTabId">Pièce d'identité</button>
-            <button type="button" class="auth-tab" data-doctab="biz" data-i18n="providerDocTabBiz">Document d'entreprise</button>
-          </div>
-
-          <div class="doc-panel is-active" data-docpanel="id">
-            <div class="doc-grid">
-              <button type="button" class="doc-slot" data-doc="idFront">
-                <img alt="" hidden>
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="12" r="1.8" stroke="currentColor" stroke-width="1.4"/><path d="M13 10.5h5M13 13.5h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                <span data-i18n="providerDocFront">Recto</span>
-              </button>
-              <button type="button" class="doc-slot" data-doc="idBack">
-                <img alt="" hidden>
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5h12M6 13.5h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                <span data-i18n="providerDocBack">Verso</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="doc-panel" data-docpanel="biz">
-            <p class="provider-section-hint" data-i18n="providerDocBizHint">Registre de commerce, agrément ou tout document prouvant l'existence de votre entreprise.</p>
-            <div class="doc-grid doc-grid-single">
-              <button type="button" class="doc-slot" data-doc="bizDoc">
-                <img alt="" hidden>
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.6"/></svg>
-                <span data-i18n="providerDocTabBiz">Document d'entreprise</span>
-              </button>
-            </div>
-          </div>
-
-          <input type="file" id="docInput" accept="image/*" hidden>
+        <div class="field" id="providerEmailField">
+          <label for="providerEmail" data-i18n="providerEmail">E-mail</label>
+          <input type="email" id="providerEmail" autocomplete="email">
+          <span class="field-error"></span>
         </div>
 
         <!-- Description -->
@@ -159,10 +91,10 @@
           <textarea id="providerDescription" rows="4" placeholder="Présentez votre activité, votre expérience, vos services..." data-i18n-placeholder="providerDescriptionPlaceholder"></textarea>
         </div>
 
-        <!-- Annonce -->
+        <!-- Information importante -->
         <div class="field">
-          <label for="providerAnnouncement" data-i18n="providerAnnouncementLabel">Annonce</label>
-          <textarea id="providerAnnouncement" rows="3" placeholder="Une information ponctuelle à mettre en avant..." data-i18n-placeholder="providerAnnouncementPlaceholder"></textarea>
+          <label for="providerAnnouncement" data-i18n="providerAnnouncementLabel">Information importante</label>
+          <textarea id="providerAnnouncement" rows="3" placeholder="Horaires, conditions, délais ou tout ce que le client doit savoir..." data-i18n-placeholder="providerAnnouncementPlaceholder"></textarea>
         </div>
 
         <button type="submit" class="btn-pill-primary">

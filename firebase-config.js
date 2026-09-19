@@ -9,7 +9,10 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  onAuthStateChanged
+  onAuthStateChanged,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  deleteUser
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import {
   getFirestore,
@@ -20,7 +23,8 @@ import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  deleteField
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -48,6 +52,9 @@ window.wtsaFirebase = {
   signInWithEmailAndPassword,
   updateProfile,
   onAuthStateChanged,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  deleteUser,
   doc,
   setDoc,
   getDoc,
@@ -55,7 +62,8 @@ window.wtsaFirebase = {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  deleteField
 };
 
 // Signale à script.js que Firebase est prêt (utile car les modules

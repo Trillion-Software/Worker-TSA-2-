@@ -682,7 +682,7 @@ button {
 
 .services-shell {
   min-height: 100vh;
-  padding: 48px 24px 64px;
+  padding: 48px 24px 120px;
   background: var(--white);
   display: flex;
   justify-content: center;
@@ -2227,4 +2227,452 @@ button {
 
 .lp-action-whatsapp {
   background: #25D366;
+}
+
+/* ==========================================================================
+   Étoile "favori" sur une carte de service (page services)
+   ========================================================================== */
+
+.service-fav-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.service-fav-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.service-card.is-favorite .service-fav-btn svg path {
+  fill: #F0A400;
+  stroke: #F0A400;
+}
+
+.service-card.is-selected .service-fav-btn {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+/* ==========================================================================
+   Barre d'options utilisateur : profil / favoris / support (bas de page)
+   ========================================================================== */
+
+.wtsa-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 420px;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  background: var(--white);
+  border: 1.5px solid rgba(224, 27, 46, 0.2);
+  border-radius: 20px;
+  padding: 8px 10px;
+  box-shadow: var(--shadow-panel);
+  z-index: 40;
+}
+
+.wtsa-dock-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  border-radius: 14px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wtsa-dock-btn.is-active,
+.wtsa-dock-btn:hover {
+  background: var(--bordeaux-soft);
+  color: var(--bordeaux);
+}
+
+.wtsa-dock-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.wtsa-dock-label {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* Voile + panneaux des 3 widgets */
+
+.wtsa-widget-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 27, 29, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 45;
+}
+
+.wtsa-widget-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wtsa-widget {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 100%);
+  width: 100%;
+  max-width: 480px;
+  max-height: 78vh;
+  overflow-y: auto;
+  background: var(--white);
+  border-radius: 22px 22px 0 0;
+  box-shadow: var(--shadow-panel);
+  padding: 22px 22px calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.wtsa-widget.is-open {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+.wtsa-widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.wtsa-widget-head h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.wtsa-widget-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--input-bg);
+  color: var(--ink-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wtsa-widget-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wtsa-widget-hint {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin: 0 0 4px;
+}
+
+.wtsa-widget-empty {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  text-align: center;
+  padding: 12px 0;
+}
+
+.wtsa-widget-locked {
+  font-size: 13.5px;
+  color: var(--bordeaux);
+  background: var(--bordeaux-soft);
+  border-radius: var(--radius-s);
+  padding: 10px 14px;
+  margin: 0 0 4px;
+}
+
+.wtsa-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: -6px;
+}
+
+.wtsa-widget-input,
+.wtsa-widget-textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  background: var(--input-bg);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14.5px;
+  color: var(--ink);
+  resize: vertical;
+}
+
+.wtsa-widget-input:disabled,
+.wtsa-widget-textarea:disabled {
+  opacity: 0.6;
+}
+
+.wtsa-widget-submit {
+  height: 48px;
+  margin-top: 6px;
+}
+
+.wtsa-widget-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.wtsa-widget-note {
+  min-height: 14px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-align: center;
+  margin: 0;
+}
+
+.wtsa-widget-note.is-success {
+  color: #1E8E3E;
+}
+
+.wtsa-fav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wtsa-fav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+}
+
+.wtsa-fav-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.wtsa-fav-remove {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.service-card.wtsa-fav-highlight {
+  border-color: #F0A400;
+  box-shadow: 0 0 0 3px rgba(240, 164, 0, 0.25);
+}
+
+/* ==========================================================================
+   Ajouts : photo de couverture, widget genre, compte (email / suppression)
+   ========================================================================== */
+
+/* Photo de couverture imposée (fichier cover.jpg ; dégradé de secours si absent) */
+.cover-banner {
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  overflow: hidden;
+}
+.cover-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cover-banner-inline {
+  border-radius: var(--radius-m);
+  height: 130px;
+}
+
+/* Widget Genre (silhouette Homme / Femme) */
+.gender-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+.gender-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 10px;
+  background: var(--input-bg);
+  border: 1.5px solid rgba(224, 27, 46, 0.35);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.gender-card.is-selected {
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  border-color: #E01B2E;
+}
+.gender-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--bordeaux);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.gender-avatar svg {
+  width: 80%;
+  height: 80%;
+}
+.gender-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.gender-card.is-selected .gender-name {
+  color: #fff;
+}
+
+/* Pastille genre sur le profil publié */
+.gender-badge {
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 12px 18px;
+  position: relative;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #fff;
+  color: var(--bordeaux);
+  box-shadow: 0 4px 14px rgba(82, 9, 26, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.gender-badge svg {
+  width: 80%;
+  height: 80%;
+}
+
+/* Cartes de la liste des prestataires : couverture + silhouette */
+.lp-card {
+  overflow: hidden;
+}
+.lp-card-cover {
+  margin: -18px -20px 0;
+  height: 84px;
+  background: linear-gradient(160deg, #E01B2E 0%, #7A1027 100%);
+  overflow: hidden;
+}
+.lp-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.lp-card-avatar {
+  width: 56px;
+  height: 56px;
+  margin-top: -38px;
+  position: relative;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #fff;
+  color: var(--bordeaux);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.lp-card-avatar svg {
+  width: 80%;
+  height: 80%;
+}
+
+/* Widget Profil : compte et suppression */
+.wtsa-account-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 6px;
+}
+.wtsa-account-value {
+  border: 1.5px solid var(--border);
+  background: var(--input-bg);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+  font-size: 14.5px;
+  color: var(--ink);
+  word-break: break-all;
+}
+.wtsa-danger-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.wtsa-danger-btn {
+  height: 46px;
+  border-radius: var(--radius-s);
+  border: 1.5px solid var(--error);
+  background: #fff;
+  color: var(--error);
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wtsa-danger-btn.is-solid {
+  background: var(--error);
+  color: #fff;
+}
+.wtsa-danger-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.wtsa-danger-note {
+  min-height: 14px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--error);
+  text-align: center;
 }

@@ -69,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
+  // Silhouettes Homme / Femme (widgets intégrés, pas de photo personnelle).
+  function wtsaGenderAvatar(gender) {
+    if (gender === 'femme') {
+      return '<svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path opacity=".55" d="M19 27c0-10 5-18 13-18s13 8 13 18v15c0 2-2 3-4 2l-2-1V33H25v11l-2 1c-2 1-4 0-4-2z"/><circle cx="32" cy="24" r="9.5"/><path d="M11 58c0-12 9-19 21-19s21 7 21 19z"/></svg>';
+    }
+    return '<svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="32" cy="23" r="10"/><path d="M11 58c0-12 9-19 21-19s21 7 21 19z"/></svg>';
+  }
+
   function translateFirebaseError(err) {
     const code = err && err.code;
     switch (code) {
@@ -141,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const userSnap = await getDoc(doc(db, 'users', credential.user.uid));
         if (userSnap.exists() && userSnap.data().role) {
+          localStorage.setItem('wtsaRole', userSnap.data().role);
           window.location.href = 'services.html';
         } else {
           window.location.href = 'choix-profil.html';
@@ -234,6 +243,29 @@ document.addEventListener('DOMContentLoaded', () => {
   if (roleOptions && roleContinue) {
     let selectedRole = null;
 
+    // Le rôle (client ou prestataire) est définitif : si l'utilisateur en a déjà
+    // un, il est renvoyé directement vers l'application, même en revenant en arrière.
+    function redirectIfRoleLocked() {
+      if (!window.wtsaFirebase) return;
+      const { auth, db, doc, getDoc, onAuthStateChanged } = window.wtsaFirebase;
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (snap.exists() && snap.data().role) {
+            localStorage.setItem('wtsaRole', snap.data().role);
+            window.location.replace('services.html');
+          }
+        } catch (err) {
+          console.error('Erreur lors de la vérification du rôle :', err);
+        }
+      });
+    }
+    redirectIfRoleLocked();
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) window.location.reload();
+    });
+
     roleOptions.querySelectorAll('.role-card').forEach(card => {
       card.addEventListener('click', () => {
         roleOptions.querySelectorAll('.role-card').forEach(c => c.classList.remove('is-selected'));
@@ -245,23 +277,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     roleContinue.addEventListener('click', async () => {
       if (!selectedRole) return;
+      roleContinue.disabled = true;
 
-      localStorage.setItem('wtsaRole', selectedRole);
+      let finalRole = selectedRole;
 
       if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
-        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        const { db, doc, getDoc, setDoc, auth } = window.wtsaFirebase;
         try {
-          await setDoc(doc(db, 'users', auth.currentUser.uid), { role: selectedRole }, { merge: true });
+          const ref = doc(db, 'users', auth.currentUser.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists() && snap.data().role) {
+            // Rôle déjà choisi : on ne le change jamais.
+            finalRole = snap.data().role;
+          } else {
+            await setDoc(ref, { role: selectedRole }, { merge: true });
+          }
         } catch (err) {
           console.error('Erreur lors de l\'enregistrement du rôle :', err);
         }
       }
 
-      if (selectedRole === 'client') {
-        window.location.href = 'profil-client.html';
-      } else {
-        window.location.href = 'services.html';
-      }
+      localStorage.setItem('wtsaRole', finalRole);
+      // Client : accès direct à l'application, sans profil à remplir.
+      // Prestataire : choix du domaine, puis profil.
+      window.location.replace('services.html');
     });
   }
 
@@ -343,146 +382,406 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Page profil client (photo, prénom, nom, téléphone) ---
-  const avatarCircle = document.getElementById('avatarCircle');
-  const avatarInput = document.getElementById('avatarInput');
-  const avatarPreview = document.getElementById('avatarPreview');
-  const avatarPlaceholder = document.querySelector('.avatar-placeholder');
-  const clientProfileForm = document.getElementById('clientProfileForm');
+  // --- Barre d'options (profil / favoris / support) sur la page des services ---
+  // Visible pour tous les utilisateurs connectés, clients comme prestataires.
+  const wtsaDock = document.getElementById('wtsaDock');
+  if (wtsaDock) {
 
-  if (avatarCircle && avatarInput) {
-    avatarCircle.addEventListener('click', () => avatarInput.click());
+    function escapeWtsaHtml(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
 
-    avatarInput.addEventListener('change', () => {
-      const file = avatarInput.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        avatarPreview.src = e.target.result;
-        avatarPreview.hidden = false;
-        if (avatarPlaceholder) avatarPlaceholder.style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+    function formatWtsaDate(d) {
+      const lang = typeof wtsaGetLang === 'function' ? wtsaGetLang() : 'fr';
+      return d.toLocaleDateString(lang === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
 
-  if (clientProfileForm) {
-    clientProfileForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      let valid = true;
+    function wtsaT(key) {
+      const lang = typeof wtsaGetLang === 'function' ? wtsaGetLang() : 'fr';
+      return (translations[key] && translations[key][lang]) || '';
+    }
 
-      const firstNameField = document.getElementById('firstNameField');
-      const firstNameInput = document.getElementById('firstName');
-      clearError(firstNameField);
-      if (firstNameInput.value.trim().length < 2) {
-        showError(firstNameField, 'Entrez votre prénom.');
-        valid = false;
-      }
+    const overlay = document.getElementById('wtsaWidgetOverlay');
+    const widgets = {
+      profile: document.getElementById('wtsaProfileWidget'),
+      favorites: document.getElementById('wtsaFavoritesWidget'),
+      support: document.getElementById('wtsaSupportWidget')
+    };
 
-      const lastNameField = document.getElementById('lastNameField');
-      const lastNameInput = document.getElementById('lastName');
-      clearError(lastNameField);
-      if (lastNameInput.value.trim().length < 2) {
-        showError(lastNameField, 'Entrez votre nom.');
-        valid = false;
-      }
+    function closeAllWidgets() {
+      Object.values(widgets).forEach(w => {
+        if (!w) return;
+        w.classList.remove('is-open');
+        w.setAttribute('aria-hidden', 'true');
+      });
+      if (overlay) overlay.classList.remove('is-open');
+      wtsaDock.querySelectorAll('.wtsa-dock-btn').forEach(b => b.classList.remove('is-active'));
+    }
 
-      const phoneField = document.getElementById('phoneField');
-      const phoneInput = document.getElementById('phone');
-      clearError(phoneField);
-      const phoneDigits = phoneInput.value.replace(/\D/g, '');
-      if (phoneDigits.length !== 8) {
-        showError(phoneField, 'Entrez un numéro à 8 chiffres.');
-        valid = false;
-      }
+    function openWidget(name) {
+      closeAllWidgets();
+      const widget = widgets[name];
+      if (!widget) return;
+      widget.classList.add('is-open');
+      widget.setAttribute('aria-hidden', 'false');
+      if (overlay) overlay.classList.add('is-open');
+      const btn = wtsaDock.querySelector(`[data-widget="${name}"]`);
+      if (btn) btn.classList.add('is-active');
+      if (name === 'profile') renderProfileWidget();
+    }
 
-      if (!valid) return;
-
-      if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
-        const { db, doc, setDoc, auth } = window.wtsaFirebase;
-        try {
-          await setDoc(doc(db, 'users', auth.currentUser.uid), {
-            firstName: firstNameInput.value.trim(),
-            lastName: lastNameInput.value.trim(),
-            phone: '+228' + phoneDigits
-            // La photo de profil n'est pas encore envoyée : Firebase Storage
-            // n'est pas configuré. Pour l'instant, seul l'aperçu local fonctionne.
-          }, { merge: true });
-        } catch (err) {
-          showError(phoneField, 'Une erreur est survenue lors de l\'enregistrement. Réessayez.');
-          return;
+    wtsaDock.querySelectorAll('.wtsa-dock-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.widget;
+        const widget = widgets[name];
+        if (widget && widget.classList.contains('is-open')) {
+          closeAllWidgets();
+        } else {
+          openWidget(name);
         }
-      }
-
-      window.location.replace('services.html');
-    });
-  }
-
-  // --- Page profil prestataire ---
-  const providerProfileForm = document.getElementById('providerProfileForm');
-  if (providerProfileForm) {
-
-    // Photos du domaine (portfolio, 3 emplacements)
-    const portfolioInput = document.getElementById('portfolioInput');
-    let activePortfolioSlot = null;
-
-    document.querySelectorAll('.portfolio-slot').forEach(slot => {
-      slot.addEventListener('click', () => {
-        activePortfolioSlot = slot;
-        portfolioInput.click();
       });
     });
 
-    if (portfolioInput) {
-      portfolioInput.addEventListener('change', () => {
-        const file = portfolioInput.files[0];
-        if (!file || !activePortfolioSlot) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = activePortfolioSlot.querySelector('img');
-          img.src = e.target.result;
-          img.hidden = false;
-          activePortfolioSlot.classList.add('has-image');
-        };
-        reader.readAsDataURL(file);
-        portfolioInput.value = '';
+    document.querySelectorAll('[data-close-widget]').forEach(btn => {
+      btn.addEventListener('click', closeAllWidgets);
+    });
+    if (overlay) overlay.addEventListener('click', closeAllWidgets);
+
+    // --- Widget Support : ouvre un e-mail pré-rempli vers l'équipe Worker TSA ---
+    const wtsaSupportSend = document.getElementById('wtsaSupportSend');
+    if (wtsaSupportSend) {
+      wtsaSupportSend.addEventListener('click', () => {
+        const messageInput = document.getElementById('wtsaSupportMessage');
+        const message = messageInput ? messageInput.value.trim() : '';
+        const subject = encodeURIComponent('Message support — Worker TSA');
+        const body = encodeURIComponent(
+          message
+            ? `Bonjour,\n\n${message}`
+            : "Bonjour,\n\nJ'ai besoin d'aide concernant Worker TSA."
+        );
+        window.location.href = `mailto:workertsa001@protonmail.com?subject=${subject}&body=${body}`;
       });
     }
 
-    // Tabs justificatif : pièce d'identité / document d'entreprise
-    document.querySelectorAll('[data-doctab]').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('[data-doctab]').forEach(t => t.classList.toggle('is-active', t === tab));
-        document.querySelectorAll('.doc-panel').forEach(panel => {
-          panel.classList.toggle('is-active', panel.dataset.docpanel === tab.dataset.doctab);
+    // --- Widget Favoris : chaque utilisateur (client ou prestataire) peut
+    //     ajouter/retirer une catégorie de service à ses favoris. ---
+    let wtsaFavorites = [];
+    try {
+      wtsaFavorites = JSON.parse(localStorage.getItem('wtsaFavorites') || '[]');
+    } catch (err) {
+      wtsaFavorites = [];
+    }
+
+    function renderFavoritesList() {
+      const listEl = document.getElementById('wtsaFavList');
+      const emptyEl = document.getElementById('wtsaFavEmpty');
+      if (!listEl || !emptyEl) return;
+      listEl.innerHTML = '';
+      if (!wtsaFavorites.length) {
+        emptyEl.style.display = '';
+        return;
+      }
+      emptyEl.style.display = 'none';
+      wtsaFavorites.forEach(name => {
+        const li = document.createElement('li');
+        li.className = 'wtsa-fav-item';
+        li.innerHTML = `
+          <span class="wtsa-fav-name">${escapeWtsaHtml(name)}</span>
+          <button type="button" class="wtsa-fav-remove" aria-label="Retirer">&times;</button>
+        `;
+        li.querySelector('.wtsa-fav-name').addEventListener('click', () => {
+          closeAllWidgets();
+          const card = Array.from(document.querySelectorAll('.service-card')).find(c => {
+            const nameEl = c.querySelector('.service-name');
+            return nameEl && nameEl.textContent.trim() === name;
+          });
+          if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.add('wtsa-fav-highlight');
+            setTimeout(() => card.classList.remove('wtsa-fav-highlight'), 1600);
+          }
         });
+        li.querySelector('.wtsa-fav-remove').addEventListener('click', () => toggleWtsaFavorite(name));
+        listEl.appendChild(li);
       });
+    }
+
+    function saveWtsaFavorites() {
+      localStorage.setItem('wtsaFavorites', JSON.stringify(wtsaFavorites));
+      if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+        const { db, doc, setDoc, auth } = window.wtsaFirebase;
+        setDoc(doc(db, 'users', auth.currentUser.uid), { favorites: wtsaFavorites }, { merge: true })
+          .catch(err => console.error('Erreur lors de l\'enregistrement des favoris :', err));
+      }
+    }
+
+    function toggleWtsaFavorite(name) {
+      const idx = wtsaFavorites.indexOf(name);
+      if (idx === -1) {
+        wtsaFavorites.push(name);
+      } else {
+        wtsaFavorites.splice(idx, 1);
+      }
+      document.querySelectorAll('.service-card').forEach(card => {
+        const nameEl = card.querySelector('.service-name');
+        if (nameEl && nameEl.textContent.trim() === name) {
+          card.classList.toggle('is-favorite', wtsaFavorites.includes(name));
+        }
+      });
+      renderFavoritesList();
+      saveWtsaFavorites();
+    }
+
+    // Ajoute une étoile "favori" sur chaque carte de service, sans gêner
+    // le clic principal de la carte (sélection de domaine / navigation).
+    document.querySelectorAll('.service-card').forEach(card => {
+      const favBtn = document.createElement('button');
+      favBtn.type = 'button';
+      favBtn.className = 'service-fav-btn';
+      favBtn.setAttribute('aria-label', 'Favori');
+      favBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.6l-5.9 3 1.3-6.6-4.9-4.6 6.6-.8L12 2.5z" fill="none" stroke="#B8ABAF" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+      favBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const name = card.querySelector('.service-name').textContent.trim();
+        toggleWtsaFavorite(name);
+      });
+      card.appendChild(favBtn);
+
+      const name = card.querySelector('.service-name').textContent.trim();
+      if (wtsaFavorites.includes(name)) card.classList.add('is-favorite');
     });
 
-    // Emplacements de documents (recto/verso ou document d'entreprise)
-    const docInput = document.getElementById('docInput');
-    let activeDocSlot = null;
+    renderFavoritesList();
 
-    document.querySelectorAll('.doc-slot').forEach(slot => {
-      slot.addEventListener('click', () => {
-        activeDocSlot = slot;
-        docInput.click();
+    // Récupère les favoris déjà enregistrés côté serveur pour un utilisateur connecté.
+    if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
+      const { db, doc, getDoc, auth } = window.wtsaFirebase;
+      getDoc(doc(db, 'users', auth.currentUser.uid)).then(snap => {
+        if (snap.exists() && Array.isArray(snap.data().favorites)) {
+          wtsaFavorites = snap.data().favorites;
+          localStorage.setItem('wtsaFavorites', JSON.stringify(wtsaFavorites));
+          document.querySelectorAll('.service-card').forEach(card => {
+            const name = card.querySelector('.service-name').textContent.trim();
+            card.classList.toggle('is-favorite', wtsaFavorites.includes(name));
+          });
+          renderFavoritesList();
+        }
+      }).catch(err => console.error('Erreur lors du chargement des favoris :', err));
+    }
+
+    // --- Widget Profil ---
+    //  Client : consulte son e-mail (mot de passe masqué) et peut supprimer son compte.
+    //  Prestataire : idem + modification de ses coordonnées (une fois tous les 3 jours).
+    async function renderProfileWidget() {
+      const body = document.getElementById('wtsaProfileBody');
+      if (!body) return;
+      body.innerHTML = '<p class="wtsa-widget-empty">…</p>';
+
+      if (!window.wtsaFirebase || !window.wtsaFirebase.auth.currentUser) {
+        body.innerHTML = `<p class="wtsa-widget-empty">${escapeWtsaHtml(wtsaT('profileWidgetLoggedOut'))}</p>`;
+        return;
+      }
+
+      const { db, doc, getDoc, setDoc, auth } = window.wtsaFirebase;
+      let data = {};
+      try {
+        const snap = await getDoc(doc(db, 'users', auth.currentUser.uid));
+        if (snap.exists()) data = snap.data();
+      } catch (err) {
+        console.error('Erreur lors du chargement du profil :', err);
+      }
+
+      const isProvider = data.role === 'prestataire';
+      const lastEdit = data.lastProfileEditAt ? new Date(data.lastProfileEditAt) : null;
+      const nextEditDate = lastEdit ? new Date(lastEdit.getTime() + 3 * 24 * 60 * 60 * 1000) : null;
+      const locked = !!(nextEditDate && nextEditDate > new Date());
+
+      const fields = [];
+      if (isProvider) {
+        fields.push(
+          { id: 'wtsaPwFirstName', key: 'firstName', label: wtsaT('labelFirstName'), value: data.firstName || '' },
+          { id: 'wtsaPwLastName', key: 'lastName', label: wtsaT('labelLastName'), value: data.lastName || '' },
+          { id: 'wtsaPwPhone', key: 'phone', label: wtsaT('labelPhone'), value: data.phone || '' },
+          { id: 'wtsaPwWhatsapp', key: 'whatsapp', label: wtsaT('providerWhatsapp'), value: data.whatsapp || '' },
+          { id: 'wtsaPwDescription', key: 'description', label: wtsaT('providerDescriptionLabel'), value: data.description || '', textarea: true },
+          { id: 'wtsaPwAnnouncement', key: 'announcement', label: wtsaT('providerAnnouncementLabel'), value: data.announcement || '', textarea: true }
+        );
+      }
+
+      let html = '';
+
+      // Compte : e-mail + mot de passe masqué (Firebase ne permet jamais de relire le mot de passe)
+      html += '<div class="wtsa-account-box">';
+      html += `<span class="wtsa-field-label">${escapeWtsaHtml(wtsaT('accountEmailLabel'))}</span>`;
+      html += `<div class="wtsa-account-value">${escapeWtsaHtml(auth.currentUser.email || '')}</div>`;
+      html += `<span class="wtsa-field-label">${escapeWtsaHtml(wtsaT('accountPasswordLabel'))}</span>`;
+      html += '<div class="wtsa-account-value">••••••••</div>';
+      html += `<p class="wtsa-widget-hint">${escapeWtsaHtml(wtsaT('accountPasswordNote'))}</p>`;
+      html += '</div>';
+
+      // Prestataire : coordonnées modifiables
+      if (isProvider) {
+        if (locked) {
+          html += `<p class="wtsa-widget-locked">${escapeWtsaHtml(wtsaT('profileWidgetNextEdit'))} ${formatWtsaDate(nextEditDate)}.</p>`;
+        }
+        fields.forEach(f => {
+          html += `<label class="wtsa-field-label" for="${f.id}">${escapeWtsaHtml(f.label)}</label>`;
+          html += f.textarea
+            ? `<textarea id="${f.id}" class="wtsa-widget-textarea" rows="3"${locked ? ' disabled' : ''}>${escapeWtsaHtml(f.value)}</textarea>`
+            : `<input type="text" id="${f.id}" class="wtsa-widget-input" value="${escapeWtsaHtml(f.value)}"${locked ? ' disabled' : ''}>`;
+        });
+        html += `<button type="button" class="btn-pill-primary wtsa-widget-submit" id="wtsaProfileSave"${locked ? ' disabled' : ''}>${escapeWtsaHtml(wtsaT('profileWidgetSave'))}</button>`;
+        html += `<p class="wtsa-widget-note" id="wtsaProfileNote"></p>`;
+      }
+
+      // Suppression définitive du compte (client comme prestataire)
+      html += '<div class="wtsa-danger-zone">';
+      html += `<button type="button" class="wtsa-danger-btn" id="wtsaDeleteAccount">${escapeWtsaHtml(wtsaT('deleteAccountBtn'))}</button>`;
+      html += '<div id="wtsaDeleteConfirm" hidden>';
+      html += `<p class="wtsa-widget-hint">${escapeWtsaHtml(wtsaT('deleteAccountWarn'))}</p>`;
+      html += `<input type="password" id="wtsaDeletePw" class="wtsa-widget-input" autocomplete="current-password" placeholder="${escapeWtsaHtml(wtsaT('deleteAccountPwPlaceholder'))}">`;
+      html += `<button type="button" class="wtsa-danger-btn is-solid" id="wtsaDeleteConfirmBtn">${escapeWtsaHtml(wtsaT('deleteAccountConfirmBtn'))}</button>`;
+      html += `<button type="button" class="wtsa-danger-btn" id="wtsaDeleteCancel">${escapeWtsaHtml(wtsaT('deleteAccountCancel'))}</button>`;
+      html += '</div>';
+      html += '<p class="wtsa-danger-note" id="wtsaDeleteNote"></p>';
+      html += '</div>';
+      body.innerHTML = html;
+
+      // Enregistrement des coordonnées (prestataire)
+      const saveBtn = document.getElementById('wtsaProfileSave');
+      if (saveBtn && !locked) {
+        saveBtn.addEventListener('click', async () => {
+          const updates = {};
+          fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (el) updates[f.key] = el.value.trim();
+          });
+          updates.lastProfileEditAt = new Date().toISOString();
+
+          const note = document.getElementById('wtsaProfileNote');
+          saveBtn.disabled = true;
+          try {
+            await setDoc(doc(db, 'users', auth.currentUser.uid), updates, { merge: true });
+            if (note) {
+              note.textContent = wtsaT('profileWidgetSaved');
+              note.classList.add('is-success');
+            }
+            setTimeout(closeAllWidgets, 1100);
+          } catch (err) {
+            console.error('Erreur lors de l\'enregistrement du profil :', err);
+            if (note) note.textContent = wtsaT('profileWidgetError');
+            saveBtn.disabled = false;
+          }
+        });
+      }
+
+      // Suppression définitive du compte
+      const deleteBtn = document.getElementById('wtsaDeleteAccount');
+      const deleteBox = document.getElementById('wtsaDeleteConfirm');
+      const deletePw = document.getElementById('wtsaDeletePw');
+      const deleteNote = document.getElementById('wtsaDeleteNote');
+      const deleteConfirmBtn = document.getElementById('wtsaDeleteConfirmBtn');
+      const deleteCancelBtn = document.getElementById('wtsaDeleteCancel');
+
+      deleteBtn.addEventListener('click', () => {
+        deleteBtn.hidden = true;
+        deleteBox.hidden = false;
+        deleteNote.textContent = '';
+        deletePw.focus();
       });
-    });
 
-    if (docInput) {
-      docInput.addEventListener('change', () => {
-        const file = docInput.files[0];
-        if (!file || !activeDocSlot) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = activeDocSlot.querySelector('img');
-          img.src = e.target.result;
-          img.hidden = false;
-          activeDocSlot.classList.add('has-image');
+      deleteCancelBtn.addEventListener('click', () => {
+        deleteBox.hidden = true;
+        deleteBtn.hidden = false;
+        deletePw.value = '';
+        deleteNote.textContent = '';
+      });
+
+      deleteConfirmBtn.addEventListener('click', async () => {
+        const password = deletePw.value;
+        if (!password) {
+          deleteNote.textContent = wtsaT('deleteAccountNeedPw');
+          return;
+        }
+        deleteConfirmBtn.disabled = true;
+        deleteNote.textContent = '';
+
+        const { deleteDoc, EmailAuthProvider, reauthenticateWithCredential, deleteUser } = window.wtsaFirebase;
+        const user = auth.currentUser;
+
+        try {
+          // 1) Vérifie le mot de passe (obligatoire avant toute suppression de compte)
+          await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+        } catch (err) {
+          deleteNote.textContent = wtsaT('deleteAccountWrongPw');
+          deleteConfirmBtn.disabled = false;
+          return;
+        }
+
+        try {
+          // 2) Supprime le profil : les compteurs de la console (clients / prestataires)
+          //    baissent automatiquement de 1, car ils comptent les comptes existants.
+          await deleteDoc(doc(db, 'users', user.uid));
+          // 3) Supprime le compte de connexion
+          await deleteUser(user);
+          ['wtsaRole', 'wtsaDomain', 'wtsaBrowseDomain', 'wtsaFavorites'].forEach(k => localStorage.removeItem(k));
+          window.location.replace('connexion.html');
+        } catch (err) {
+          console.error('Erreur lors de la suppression du compte :', err);
+          deleteNote.textContent = wtsaT('deleteAccountError');
+          deleteConfirmBtn.disabled = false;
+        }
+      });
+    }
+  }
+
+  // --- Page profil prestataire (genre + coordonnées ; pas de photo personnelle) ---
+  const providerProfileForm = document.getElementById('providerProfileForm');
+  if (providerProfileForm) {
+
+    // Widget Genre : Homme / Femme
+    let selectedGender = null;
+    const genderError = document.getElementById('genderError');
+    const genderCards = providerProfileForm.querySelectorAll('.gender-card');
+
+    function setGender(gender) {
+      selectedGender = gender;
+      genderCards.forEach(card => {
+        const on = card.dataset.gender === gender;
+        card.classList.toggle('is-selected', on);
+        card.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      if (genderError) genderError.textContent = '';
+    }
+    genderCards.forEach(card => card.addEventListener('click', () => setGender(card.dataset.gender)));
+
+    // Pré-remplissage (utile quand le prestataire modifie son profil)
+    if (window.wtsaFirebase) {
+      const { auth, db, doc, getDoc, onAuthStateChanged } = window.wtsaFirebase;
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        let data = {};
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (snap.exists()) data = snap.data();
+        } catch (err) {
+          console.error('Erreur de lecture du profil :', err);
+        }
+        const strip = (v) => String(v || '').replace(/^\+228/, '');
+        const fill = (id, value) => {
+          const el = document.getElementById(id);
+          if (el && !el.value) el.value = value || '';
         };
-        reader.readAsDataURL(file);
-        docInput.value = '';
+        fill('providerFirstName', data.firstName);
+        fill('providerLastName', data.lastName);
+        fill('providerPhone', strip(data.phone));
+        fill('providerWhatsapp', strip(data.whatsapp));
+        fill('providerEmail', data.contactEmail || user.email);
+        fill('providerDescription', data.description);
+        fill('providerAnnouncement', data.announcement);
+        if (data.gender && !selectedGender) setGender(data.gender);
       });
     }
 
@@ -508,13 +807,17 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       let valid = true;
 
+      if (!selectedGender) {
+        if (genderError) genderError.textContent = (translations.genderRequired ? translations.genderRequired[typeof wtsaGetLang === 'function' ? wtsaGetLang() : 'fr'] : 'Choisissez Homme ou Femme.');
+        valid = false;
+      }
+
       const checks = [
         ['providerFirstNameField', 'providerFirstName', v => v.trim().length >= 2, 'Entrez votre prénom.'],
         ['providerLastNameField', 'providerLastName', v => v.trim().length >= 2, 'Entrez votre nom.'],
-        ['providerRegionField', 'providerRegion', v => v.trim().length >= 2, 'Entrez votre région.'],
-        ['providerCityField', 'providerCity', v => v.trim().length >= 2, 'Entrez votre ville.'],
         ['providerPhoneField', 'providerPhone', v => v.replace(/\D/g, '').length === 8, 'Entrez un numéro à 8 chiffres.'],
-        ['providerWhatsappField', 'providerWhatsapp', v => v.replace(/\D/g, '').length === 8, 'Entrez un numéro à 8 chiffres.']
+        ['providerWhatsappField', 'providerWhatsapp', v => v.replace(/\D/g, '').length === 8, 'Entrez un numéro à 8 chiffres.'],
+        ['providerEmailField', 'providerEmail', v => isValidEmail(v.trim()), 'Entrez une adresse e-mail valide.']
       ];
 
       const values = {};
@@ -543,17 +846,15 @@ document.addEventListener('DOMContentLoaded', () => {
             alreadyPublished = true;
           }
           await setDoc(doc(db, 'users', auth.currentUser.uid), {
+            gender: selectedGender,
             firstName: values.providerFirstName,
             lastName: values.providerLastName,
-            region: values.providerRegion,
-            city: values.providerCity,
             phone: '+228' + values.providerPhone.replace(/\D/g, ''),
             whatsapp: '+228' + values.providerWhatsapp.replace(/\D/g, ''),
+            contactEmail: values.providerEmail,
             description: description,
             announcement: announcement,
             lastProfileEditAt: new Date().toISOString()
-            // Photos (profil, portfolio, pièce d'identité/document) : aperçu local
-            // uniquement pour l'instant, Firebase Storage n'est pas encore configuré.
           }, { merge: true });
         } catch (err) {
           console.error('Erreur lors de l\'enregistrement du profil prestataire :', err);
@@ -675,7 +976,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('pvName').textContent = [data.firstName, data.lastName].filter(Boolean).join(' ') || '—';
         document.getElementById('pvDomain').textContent = data.domain || '—';
-        document.getElementById('pvLocation').textContent = [data.city, data.region].filter(Boolean).join(', ') || '—';
+        document.getElementById('pvEmail').textContent = data.contactEmail || data.email || '—';
+        const pvAvatar = document.getElementById('pvAvatar');
+        if (pvAvatar) pvAvatar.innerHTML = wtsaGenderAvatar(data.gender);
         document.getElementById('pvPhone').textContent = data.phone || '—';
         document.getElementById('pvWhatsapp').textContent = data.whatsapp || '—';
         document.getElementById('pvDescription').textContent = data.description || '—';
@@ -758,27 +1061,36 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Réinitialisation : vide UNIQUEMENT la liste des abonnements.
+    // Aucun compte n'est supprimé et les cadres Prestataires / Clients ne sont pas touchés.
     const resetConsoleBtn = document.getElementById('resetConsoleBtn');
     if (resetConsoleBtn) {
       resetConsoleBtn.addEventListener('click', async () => {
         const note = document.getElementById('resetConsoleNote');
-        const confirmed = window.confirm('Supprimer définitivement tous les comptes clients et prestataires ? Cette action est irréversible.');
+        const confirmed = window.confirm('Vider la liste des abonnements ? Les comptes et les compteurs Clients / Prestataires ne seront pas modifiés.');
         if (!confirmed) return;
 
         resetConsoleBtn.disabled = true;
         note.textContent = 'Réinitialisation en cours...';
 
         try {
-          const { deleteDoc } = window.wtsaFirebase;
-          const snap = await getDocs(collection(db, 'users'));
+          const { deleteField } = window.wtsaFirebase;
+          const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'prestataire')));
           for (const docSnap of snap.docs) {
-            if (docSnap.data().email === window.WTSA_ADMIN_EMAIL) continue;
-            await deleteDoc(doc(db, 'users', docSnap.id));
+            const d = docSnap.data();
+            const hasSub = d.subscriptionPlan || d.subscriptionAmount || d.subscriptionPaymentMethod ||
+              d.subscriptionStatus || d.subscriptionStartDate || d.subscriptionEndDate;
+            if (!hasSub) continue;
+            await setDoc(doc(db, 'users', docSnap.id), {
+              subscriptionPlan: deleteField(),
+              subscriptionAmount: deleteField(),
+              subscriptionPaymentMethod: deleteField(),
+              subscriptionStatus: deleteField(),
+              subscriptionStartDate: deleteField(),
+              subscriptionEndDate: deleteField()
+            }, { merge: true });
           }
-          note.textContent = 'Console réinitialisée à zéro.';
-          loadProviderCount();
-          loadClientCount();
-          loadPendingList();
+          note.textContent = 'Liste des abonnements réinitialisée.';
           loadSubscriptions();
         } catch (err) {
           console.error('Erreur lors de la réinitialisation :', err);
@@ -862,16 +1174,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadSubscriptions() {
       const listEl = document.getElementById('subsList');
-      const emptyEl = document.getElementById('subsEmpty');
       if (!listEl) return;
+      listEl.innerHTML = '<p class="ca-empty" id="subsEmpty">Chargement...</p>';
+      const emptyEl = document.getElementById('subsEmpty');
       try {
         const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'prestataire')));
-        if (snap.empty) {
-          emptyEl.textContent = 'Aucun prestataire pour le moment.';
+        const subDocs = snap.docs.filter(d => {
+          const x = d.data();
+          return x.subscriptionPlan || x.subscriptionStatus || x.subscriptionEndDate;
+        });
+        if (!subDocs.length) {
+          emptyEl.textContent = 'Aucun abonnement pour le moment.';
           return;
         }
         emptyEl.remove();
-        snap.forEach(docSnap => {
+        subDocs.forEach(docSnap => {
           const data = docSnap.data();
           const card = document.createElement('div');
           card.className = 'ca-pending-card';
@@ -973,6 +1290,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const card = document.createElement('div');
           card.className = 'lp-card';
           card.innerHTML = `
+            <div class="lp-card-cover"><img src="cover.jpg" alt="" onerror="this.remove()"></div>
+            <div class="lp-card-avatar">${wtsaGenderAvatar(data.gender)}</div>
             <p class="lp-card-name">${[data.firstName, data.lastName].filter(Boolean).join(' ') || 'Prestataire'}</p>
             <p class="lp-card-location">${[data.city, data.region].filter(Boolean).join(', ') || ''}</p>
             ${data.announcement ? `<p class="lp-card-announcement">${data.announcement}</p>` : ''}

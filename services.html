@@ -321,6 +321,71 @@
     </div>
   </main>
 
+  <!-- ======================================================================
+       Barre d'options utilisateur (client ou prestataire) : profil / favoris / support
+       ====================================================================== -->
+  <nav class="wtsa-dock" id="wtsaDock">
+    <button type="button" class="wtsa-dock-btn" id="wtsaDockProfile" data-widget="profile">
+      <span class="wtsa-dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3.6" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 19.2c1.4-3.3 4.2-5 7.5-5s6.1 1.7 7.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </span>
+      <span class="wtsa-dock-label" data-i18n="dockProfileLabel">Profil</span>
+    </button>
+
+    <button type="button" class="wtsa-dock-btn" id="wtsaDockFavorites" data-widget="favorites">
+      <span class="wtsa-dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20s-7.5-4.6-9.7-9A5.3 5.3 0 0 1 12 6.4 5.3 5.3 0 0 1 21.7 11c-2.2 4.4-9.7 9-9.7 9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="wtsa-dock-label" data-i18n="dockFavoritesLabel">Favoris</span>
+    </button>
+
+    <button type="button" class="wtsa-dock-btn" id="wtsaDockSupport" data-widget="support">
+      <span class="wtsa-dock-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M9.2 9.5a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.1.8-1.1 1.6v.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17.2" r="0.9" fill="currentColor"/></svg>
+      </span>
+      <span class="wtsa-dock-label" data-i18n="dockSupportLabel">Support</span>
+    </button>
+  </nav>
+
+  <div class="wtsa-widget-overlay" id="wtsaWidgetOverlay"></div>
+
+  <!-- Widget : Mon profil (édition limitée à une fois tous les 3 jours) -->
+  <section class="wtsa-widget" id="wtsaProfileWidget" aria-hidden="true">
+    <div class="wtsa-widget-head">
+      <h2 data-i18n="profileWidgetTitle">Mon profil</h2>
+      <button type="button" class="wtsa-widget-close" data-close-widget aria-label="Fermer">&times;</button>
+    </div>
+    <div class="wtsa-widget-body" id="wtsaProfileBody"></div>
+  </section>
+
+  <!-- Widget : Favoris -->
+  <section class="wtsa-widget" id="wtsaFavoritesWidget" aria-hidden="true">
+    <div class="wtsa-widget-head">
+      <h2 data-i18n="favoritesWidgetTitle">Mes favoris</h2>
+      <button type="button" class="wtsa-widget-close" data-close-widget aria-label="Fermer">&times;</button>
+    </div>
+    <div class="wtsa-widget-body">
+      <p class="wtsa-widget-hint" data-i18n="favoritesWidgetHint">Touchez l'étoile sur une catégorie pour l'ajouter à vos favoris.</p>
+      <ul class="wtsa-fav-list" id="wtsaFavList"></ul>
+      <p class="wtsa-widget-empty" id="wtsaFavEmpty" data-i18n="favoritesWidgetEmpty">Aucun favori pour le moment.</p>
+    </div>
+  </section>
+
+  <!-- Widget : Support -->
+  <section class="wtsa-widget" id="wtsaSupportWidget" aria-hidden="true">
+    <div class="wtsa-widget-head">
+      <h2 data-i18n="supportWidgetTitle">Contacter le support</h2>
+      <button type="button" class="wtsa-widget-close" data-close-widget aria-label="Fermer">&times;</button>
+    </div>
+    <div class="wtsa-widget-body">
+      <p class="wtsa-widget-hint" data-i18n="supportWidgetSubtext">Décrivez votre problème, un e-mail sera préparé à destination de notre équipe.</p>
+      <textarea id="wtsaSupportMessage" class="wtsa-widget-textarea" rows="5" data-i18n-placeholder="supportWidgetPlaceholder" placeholder="Votre message..."></textarea>
+      <button type="button" class="btn-pill-primary wtsa-widget-submit" id="wtsaSupportSend">
+        <span data-i18n="supportWidgetSend">Envoyer par e-mail</span>
+      </button>
+    </div>
+  </section>
+
   <script type="module" src="firebase-config.js"></script>
   <script src="i18n.js"></script>
   <script src="script.js"></script>
