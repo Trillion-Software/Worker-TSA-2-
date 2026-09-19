@@ -69,6 +69,26 @@ document.addEventListener('DOMContentLoaded', () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
+  // Domaines : on enregistre toujours le nom FRANÇAIS (valeur fixe), quelle que soit
+  // la langue affichée, pour que prestataires et clients se retrouvent.
+  function wtsaDomainFromCard(card) {
+    const nameEl = card.querySelector('.service-name');
+    const key = nameEl.getAttribute('data-i18n');
+    return (key && translations[key] && translations[key].fr) || nameEl.textContent.trim();
+  }
+  function wtsaDomainEntry(domain) {
+    return Object.values(translations).find(t => t.fr === domain || t.en === domain) || null;
+  }
+  function wtsaDomainVariants(domain) {
+    const entry = wtsaDomainEntry(domain);
+    return entry ? Array.from(new Set([entry.fr, entry.en])) : [domain];
+  }
+  function wtsaDomainLabel(domain) {
+    const entry = wtsaDomainEntry(domain);
+    const lang = typeof wtsaGetLang === 'function' ? wtsaGetLang() : 'fr';
+    return entry ? entry[lang] : domain;
+  }
+
   // Silhouettes Homme / Femme (widgets intégrés, pas de photo personnelle).
   function wtsaGenderAvatar(gender) {
     if (gender === 'femme') {
@@ -348,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
           servicesGrid.querySelectorAll('.service-card').forEach(c => c.classList.remove('is-selected'));
           card.classList.add('is-selected');
-          selectedDomain = card.querySelector('.service-name').textContent.trim();
+          selectedDomain = wtsaDomainFromCard(card);
           if (continueBtn) continueBtn.disabled = false;
         });
       });
@@ -374,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Mode client : cliquer sur une catégorie ouvre la liste des prestataires de ce domaine.
       servicesGrid.querySelectorAll('.service-card').forEach(card => {
         card.addEventListener('click', () => {
-          const domain = card.querySelector('.service-name').textContent.trim();
+          const domain = wtsaDomainFromCard(card);
           localStorage.setItem('wtsaBrowseDomain', domain);
           window.location.href = 'liste-prestataires.html';
         });
@@ -907,15 +927,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.wtsaFirebase && window.wtsaFirebase.auth.currentUser) {
         const { db, doc, setDoc, auth } = window.wtsaFirebase;
         try {
-          await setDoc(doc(db, 'users', auth.currentUser.uid), {
+          const { getDoc } = window.wtsaFirebase;
+          const existing = await getDoc(doc(db, 'users', auth.currentUser.uid));
+          const alreadyPublished = existing.exists() && existing.data().profileStatus === 'published';
+          const subUpdate = {
             subscriptionPlan: selectedPlan.id,
             subscriptionAmount: selectedPlan.amount,
             subscriptionPaymentMethod: selectedPayment,
             subscriptionStatus: 'awaiting_proof',
             subscriptionStartDate: startDate.toISOString(),
-            subscriptionEndDate: endDate.toISOString(),
-            profileStatus: 'awaiting_proof'
-          }, { merge: true });
+            subscriptionEndDate: endDate.toISOString()
+          };
+          // Un profil déjà publié le reste (sinon il disparaît de la liste des clients).
+          if (!alreadyPublished) subUpdate.profileStatus = 'awaiting_proof';
+          await setDoc(doc(db, 'users', auth.currentUser.uid), subUpdate, { merge: true });
         } catch (err) {
           console.error('Erreur lors de l\'enregistrement de l\'abonnement :', err);
         }
@@ -975,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showMpState('statePublished');
 
         document.getElementById('pvName').textContent = [data.firstName, data.lastName].filter(Boolean).join(' ') || '—';
-        document.getElementById('pvDomain').textContent = data.domain || '—';
+        document.getElementById('pvDomain').textContent = data.domain ? wtsaDomainLabel(data.domain) : '—';
         document.getElementById('pvEmail').textContent = data.contactEmail || data.email || '—';
         const pvAvatar = document.getElementById('pvAvatar');
         if (pvAvatar) pvAvatar.innerHTML = wtsaGenderAvatar(data.gender);
@@ -1267,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { db, collection, query, where, getDocs } = window.wtsaFirebase;
     const domain = localStorage.getItem('wtsaBrowseDomain') || '';
     const titleEl = document.getElementById('lpDomainTitle');
-    if (titleEl && domain) titleEl.textContent = domain;
+    if (titleEl && domain) titleEl.textContent = wtsaDomainLabel(domain);
 
     (async () => {
       const emptyEl = document.getElementById('lpEmpty');
@@ -1276,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', () => {
           collection(db, 'users'),
           where('role', '==', 'prestataire'),
           where('profileStatus', '==', 'published'),
-          where('domain', '==', domain)
+          where('domain', 'in', wtsaDomainVariants(domain))
         ));
 
         if (snap.empty) {
