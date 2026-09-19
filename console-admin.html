@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <button type="button" class="back-btn" onclick="history.back()" aria-label="Retour">
+  <button type="button" class="back-btn" id="caBackBtn" aria-label="Retour">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5l-7 7 7 7" stroke="#7A1027" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
 
@@ -38,6 +38,16 @@
         <div id="pendingList" class="ca-pending-list">
           <p class="ca-empty" id="pendingEmpty">Chargement...</p>
         </div>
+      </section>
+
+      <!-- Réinitialisation complète de la console (admin uniquement) -->
+      <section class="ca-section">
+        <h2 class="ca-section-title">Zone sensible</h2>
+        <p class="ca-section-hint">Supprime définitivement tous les comptes clients et prestataires (compteurs, demandes, abonnements) pour repartir de zéro. Action irréversible.</p>
+        <button type="button" class="btn-pill-secondary" id="resetConsoleBtn">
+          <span>Réinitialiser la console à zéro</span>
+        </button>
+        <p class="ca-save-note" id="resetConsoleNote"></p>
       </section>
 
       <!-- Abonnements des prestataires (visible uniquement par l'administrateur) -->

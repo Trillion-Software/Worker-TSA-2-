@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      window.location.href = 'services.html';
+      window.location.replace('services.html');
     });
   }
 
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      window.location.href = alreadyPublished ? 'mon-profil.html' : 'abonnement.html';
+      window.location.replace(alreadyPublished ? 'mon-profil.html' : 'abonnement.html');
     });
   }
 
@@ -749,6 +749,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const caShell = document.querySelector('.ca-shell');
   if (caShell && window.wtsaFirebase) {
     const { auth, db, doc, setDoc, getDoc, collection, query, where, getDocs, onAuthStateChanged } = window.wtsaFirebase;
+
+    const caBackBtn = document.getElementById('caBackBtn');
+    if (caBackBtn) {
+      caBackBtn.addEventListener('click', () => {
+        localStorage.setItem('wtsaRole', 'client');
+        window.location.href = 'services.html';
+      });
+    }
+
+    const resetConsoleBtn = document.getElementById('resetConsoleBtn');
+    if (resetConsoleBtn) {
+      resetConsoleBtn.addEventListener('click', async () => {
+        const note = document.getElementById('resetConsoleNote');
+        const confirmed = window.confirm('Supprimer définitivement tous les comptes clients et prestataires ? Cette action est irréversible.');
+        if (!confirmed) return;
+
+        resetConsoleBtn.disabled = true;
+        note.textContent = 'Réinitialisation en cours...';
+
+        try {
+          const { deleteDoc } = window.wtsaFirebase;
+          const snap = await getDocs(collection(db, 'users'));
+          for (const docSnap of snap.docs) {
+            if (docSnap.data().email === window.WTSA_ADMIN_EMAIL) continue;
+            await deleteDoc(doc(db, 'users', docSnap.id));
+          }
+          note.textContent = 'Console réinitialisée à zéro.';
+          loadProviderCount();
+          loadClientCount();
+          loadPendingList();
+          loadSubscriptions();
+        } catch (err) {
+          console.error('Erreur lors de la réinitialisation :', err);
+          note.textContent = 'Erreur lors de la réinitialisation.';
+        } finally {
+          resetConsoleBtn.disabled = false;
+        }
+      });
+    }
 
     async function loadProviderCount() {
       const countEl = document.getElementById('providerCount');
